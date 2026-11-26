@@ -1,0 +1,273 @@
+/*
+ * Tailwind v4 entry: config lives here, with no tailwind.config.js or PostCSS plugin.
+ * Keep every @import in this top block. Remote fonts load via <link> in src/routes/__root.tsx.
+ */
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * SlagBio design system — Horizon design language.
+ * Plus Jakarta Sans, coral primary, lime pill tags, deep teal tertiary,
+ * warm surface containers, frosted glass panels and ambient sky/violet/rose light.
+ */
+
+@theme inline {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --text-display-xl: 64px;
+  --text-display-xl--line-height: 1.1;
+  --text-display-xl--letter-spacing: -0.04em;
+  --text-display-xl--font-weight: 800;
+  --text-headline-lg: 40px;
+  --text-headline-lg--line-height: 1.2;
+  --text-headline-lg--letter-spacing: -0.02em;
+  --text-headline-lg--font-weight: 700;
+  --text-headline-md: 24px;
+  --text-headline-md--line-height: 1.3;
+  --text-headline-md--letter-spacing: -0.01em;
+  --text-headline-md--font-weight: 600;
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 1.6;
+  --text-body-md: 16px;
+  --text-body-md--line-height: 1.6;
+  --text-label-caps: 12px;
+  --text-label-caps--line-height: 1;
+  --text-label-caps--letter-spacing: 0.1em;
+  --text-label-caps--font-weight: 700;
+
+  --radius-sm: calc(var(--radius) - 8px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary-container: var(--on-primary-container);
+  --color-primary-fixed: var(--primary-fixed);
+  --color-primary-ink: var(--primary-ink);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-lime: var(--lime);
+  --color-lime-foreground: var(--lime-foreground);
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-foreground: var(--tertiary-foreground);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-dim: var(--surface-dim);
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+  --color-glass: var(--glass);
+  --color-glass-strong: var(--glass-strong);
+  --color-glass-border: var(--glass-border);
+  --color-sky: var(--ambient-sky);
+  --color-violet: var(--ambient-violet);
+  --color-rose: var(--ambient-rose);
+  --color-success: var(--success);
+  --color-cursor: var(--cursor);
+  --color-scrim: var(--scrim);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --shadow-glass: 0 8px 32px oklch(0 0 0 / 0.04);
+  --shadow-float: 0 40px 80px -20px oklch(0 0 0 / 0.12);
+  --shadow-pill: 0 1px 2px oklch(0 0 0 / 0.05);
+}
+
+:root {
+  --radius: 1rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0 0 0);
+
+  --primary: oklch(0.689 0.203 34.1);
+  --primary-foreground: oklch(1 0 0);
+  --primary-container: oklch(0.755 0.151 38.3);
+  --on-primary-container: oklch(0.381 0.121 37.7);
+  --primary-fixed: oklch(0.919 0.043 37.7);
+  /* Coral deepened for small text on light surfaces (≥4.5:1 on white and cream). */
+  --primary-ink: oklch(0.546 0.178 34.7);
+
+  --secondary: oklch(0.948 0.016 82.8);
+  --secondary-foreground: oklch(0 0 0);
+  --lime: oklch(0.905 0.143 118.7);
+  --lime-foreground: oklch(0.499 0.119 120.4);
+  --tertiary: oklch(0.48 0.063 224.8);
+  --tertiary-foreground: oklch(1 0 0);
+  --tertiary-container: oklch(0.733 0.061 227.5);
+
+  --muted: oklch(0.966 0.016 82.8);
+  --muted-foreground: oklch(0.45 0 0);
+  --accent: oklch(0.966 0.016 82.8);
+  --accent-foreground: oklch(0 0 0);
+  --destructive: oklch(0.506 0.193 27.7);
+  --destructive-foreground: oklch(1 0 0);
+
+  --surface-container: oklch(0.948 0.016 82.8);
+  --surface-container-low: oklch(0.966 0.016 82.8);
+  --surface-container-high: oklch(0.932 0.016 86.4);
+  --surface-dim: oklch(0.887 0.015 80.7);
+  --outline: oklch(0.572 0.031 37.6);
+  --outline-variant: oklch(0.83 0.035 35.9);
+
+  --glass: oklch(1 0 0 / 0.4);
+  --glass-strong: oklch(1 0 0 / 0.65);
+  --glass-border: oklch(1 0 0 / 0.6);
+  --ambient-sky: oklch(0.754 0.139 232.7);
+  --ambient-violet: oklch(0.722 0.177 305.5);
+  --ambient-rose: oklch(0.791 0.121 17.6);
+  --success: oklch(0.72 0.19 145);
+  --cursor: oklch(1 0 0);
+  --scrim: oklch(0.2 0.01 60 / 0.35);
+
+  --border: oklch(0.83 0.035 35.9 / 0.45);
+  --input: oklch(0.83 0.035 35.9 / 0.7);
+  --ring: oklch(0.689 0.203 34.1);
+
+  --chart-1: oklch(0.689 0.203 34.1);
+  --chart-2: oklch(0.48 0.063 224.8);
+  --chart-3: oklch(0.905 0.143 118.7);
+  --chart-4: oklch(0.722 0.177 305.5);
+  --chart-5: oklch(0.754 0.139 232.7);
+
+  --sidebar: oklch(1 0 0 / 0.4);
+  --sidebar-foreground: oklch(0 0 0);
+  --sidebar-primary: oklch(0.689 0.203 34.1);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.948 0.016 82.8);
+  --sidebar-accent-foreground: oklch(0 0 0);
+  --sidebar-border: oklch(1 0 0 / 0.6);
+  --sidebar-ring: oklch(0.689 0.203 34.1);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+  ::selection {
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+  }
+}
+
+/* Frosted glass panel (Horizon: bg-white/40 backdrop-blur-xl border-white/60) */
+@utility glass {
+  background-color: var(--glass);
+  backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass);
+}
+@utility glass-strong {
+  background-color: var(--glass-strong);
+  backdrop-filter: blur(40px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass);
+}
+
+/* Ambient lighting gradient from the Horizon hero */
+@utility bg-ambient {
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--ambient-sky) 20%, transparent),
+    color-mix(in oklab, var(--ambient-violet) 10%, transparent) 55%,
+    var(--background)
+  );
+}
+@utility bg-ambient-warm {
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--ambient-violet) 18%, transparent),
+    color-mix(in oklab, var(--ambient-rose) 22%, transparent)
+  );
+}
+@utility bg-dots {
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--ambient-violet) 35%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+}
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@utility animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 15s ease infinite;
+}
+@keyframes float-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@utility animate-float-in {
+  animation: float-in 0.35s ease-out both;
+}
+@keyframes block-flash {
+  0% { box-shadow: inset 0 0 0 3px var(--primary); }
+  100% { box-shadow: inset 0 0 0 3px transparent; }
+}
+@utility animate-block-flash {
+  animation: block-flash 1.2s ease-out both;
+}
+
+[contenteditable]:focus {
+  outline: none;
+}
+[contenteditable][data-placeholder]:empty::before {
+  content: attr(data-placeholder);
+  opacity: 0.45;
+}
