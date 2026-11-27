@@ -9,6 +9,7 @@ import { inputCls } from "@/components/slag/Choice";
 import { isSlugTaken, publishCampaign, useCampaign } from "@/lib/slag/store";
 import { DURATIONS, PUBLIC_HOST, expiryFrom, formatDate, slugify } from "@/lib/slag/publishing";
 import { cn } from "@/lib/utils";
+import { safeGoogleFormUrl } from "@/lib/slag/blocks";
 import { useAuthGuard } from "@/lib/supabase/use-auth";
 import { isCampaignSlugAvailable } from "@/lib/supabase/data";
 
@@ -64,9 +65,24 @@ function Publish() {
       : isSlugTaken(s, campaign.id)
         ? "That link is taken"
         : "";
+  const formBlock = campaign.blocks.find((block) => block.type === "form");
+  const hasFormAction = campaign.blocks.some(
+    (block) => block.type === "cta" && block.content.action === "form",
+  );
+  const formError = formBlock
+    ? safeGoogleFormUrl(formBlock.content.googleFormUrl)
+      ? ""
+      : "Add a valid Google Forms responder link in the editor before publishing."
+    : hasFormAction
+      ? "Add a Google Forms block and responder link in the editor before publishing."
+      : "";
   const start = new Date();
   const publish = async () => {
     if (slugErr || publishing) return;
+    if (formError) {
+      setError(formError);
+      return;
+    }
     setPublishing(true);
     setError("");
     try {
@@ -133,6 +149,14 @@ function Publish() {
                 ))}
               </div>
             </div>
+            {formError && (
+              <p role="alert" className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
+                {formError}{" "}
+                <Link to="/studio/$id" params={{ id }} className="font-semibold underline">
+                  Open editor
+                </Link>
+              </p>
+            )}
             <p className="rounded-2xl border border-glass-border bg-glass p-4 text-sm">
               <span className="block font-semibold">Link-only sharing</span>
               <span className="text-xs text-muted-foreground">
@@ -163,7 +187,7 @@ function Publish() {
             <Button
               className="w-full"
               size="lg"
-              disabled={!!slugErr || publishing}
+              disabled={!!slugErr || !!formError || publishing}
               onClick={publish}
             >
               {publishing ? (

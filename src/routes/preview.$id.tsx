@@ -41,7 +41,7 @@ function Preview() {
         </div>
         <Button asChild size="sm"><Link to="/publish/$id" params={{ id }}>Continue to publishing</Link></Button>
       </header>
-      <p className="py-3 text-center text-xs text-muted-foreground">Test mode — buttons work, form responses aren't saved.</p>
+      <p className="py-3 text-center text-xs text-muted-foreground">Preview mode — Google Forms links open the actual responder form.</p>
       <div className="mx-auto overflow-hidden rounded-[28px] shadow-float" style={{ maxWidth: wide ? 1100 : 390 }}>
         <PosterRenderer campaign={campaign} mode="preview" onCtaClick={(b) => { if (b.content.action !== "form" && !ctaHref(b)) toast("This button has no destination yet", { description: "Add one in the editor." }); }} />
       </div>

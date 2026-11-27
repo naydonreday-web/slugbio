@@ -1,4 +1,4 @@
-import type { Block, BlockStyle, BlockType, FormField } from "./types";
+import type { Block, BlockStyle, BlockType } from "./types";
 
 let counter = 0;
 export function uid(prefix = "id"): string {
@@ -13,7 +13,7 @@ export const BLOCK_META: Record<BlockType, { label: string; description: string 
   offer: { label: "Offer", description: "Price, discount or deal" },
   details: { label: "Details", description: "Dates, venue, contact" },
   cta: { label: "Button", description: "Call to action" },
-  form: { label: "Form", description: "Registration or enquiry" },
+  form: { label: "Google Form", description: "Link to an external Google Form" },
   social: { label: "Social", description: "Social and contact links" },
   footer: { label: "Footer", description: "Branding and terms" },
 };
@@ -22,22 +22,6 @@ export const ADDABLE_BLOCKS: BlockType[] = ["text", "image", "offer", "details",
 
 export function baseStyle(partial: Partial<BlockStyle> = {}): BlockStyle {
   return { align: "center", padding: 40, headingScale: 1, headingWeight: 700, ...partial };
-}
-
-export function registrationFields(): FormField[] {
-  return [
-    { id: uid("f"), label: "Full name", type: "text", required: true },
-    { id: uid("f"), label: "Phone number", type: "tel", required: true },
-    { id: uid("f"), label: "Email", type: "email", required: false },
-  ];
-}
-
-export function enquiryFields(): FormField[] {
-  return [
-    { id: uid("f"), label: "Your name", type: "text", required: true },
-    { id: uid("f"), label: "Phone or email", type: "text", required: true },
-    { id: uid("f"), label: "Message", type: "textarea", required: false },
-  ];
 }
 
 export function createBlock(type: BlockType, overrides: Partial<Block["content"]> = {}): Block {
@@ -71,7 +55,7 @@ export function createBlock(type: BlockType, overrides: Partial<Block["content"]
     case "cta":
       return { id, type, content: { label: "Contact us on WhatsApp", action: "whatsapp", target: "", message: "Hi! I saw your campaign and would like to know more.", note: "", ...overrides }, style: baseStyle({ padding: 32 }) };
     case "form":
-      return { id, type, content: { heading: "Register your interest", body: "Leave your details and we'll be in touch.", fields: registrationFields(), submitLabel: "Submit", successMessage: "Thank you! We've received your details.", ...overrides }, style: baseStyle({ align: "left", padding: 40, headingScale: 0.9 }) };
+      return { id, type, content: { heading: "Register your interest", body: "Continue to Google Forms to share your details.", submitLabel: "Open Google Form", ...overrides }, style: baseStyle({ align: "left", padding: 40, headingScale: 0.9 }) };
     case "social":
       return { id, type, content: { heading: "Follow along", links: [ { id: uid("s"), platform: "instagram", url: "" }, { id: uid("s"), platform: "facebook", url: "" } ], ...overrides }, style: baseStyle({ padding: 32, headingScale: 0.75 }) };
     case "footer":
@@ -109,6 +93,22 @@ export function safeUrl(url?: string): string | null {
     const u = new URL(withProto);
     if (u.protocol !== "http:" && u.protocol !== "https:") return null;
     return u.toString();
+  } catch {
+    return null;
+  }
+}
+
+/** Accept only Google Forms responder links; campaigns never collect responses in SlagBio. */
+export function safeGoogleFormUrl(url?: string): string | null {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url.trim());
+    if (parsed.protocol !== "https:" || parsed.username || parsed.password) return null;
+    const host = parsed.hostname.toLowerCase();
+    if (host === "forms.gle" && parsed.pathname.length > 1) return parsed.toString();
+    if (host === "docs.google.com" && /^\/forms\/(?:d\/|u\/\d+\/)/.test(parsed.pathname))
+      return parsed.toString();
+    return null;
   } catch {
     return null;
   }

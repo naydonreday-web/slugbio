@@ -348,14 +348,6 @@ export function recordShare(id: string) {
   if (isSupabaseConfigured()) void trackCloudCampaignMetric(id, "share").catch(() => {});
   updateCampaign(id, (c) => ({ ...c, shares: c.shares + 1 }));
 }
-export function addResponse(id: string, values: Record<string, string>) {
-  updateCampaign(id, (c) => ({
-    ...c,
-    responses: [{ id: uid("r"), submittedAt: new Date().toISOString(), values }, ...c.responses],
-    daily: bump(c, "responses"),
-  }));
-}
-
 export function removeResponseLocal(campaignId: string, responseId: string) {
   ensureLoaded();
   state = {

@@ -76,6 +76,7 @@ export interface BlockContent {
   target?: string;
   message?: string;
   // form
+  googleFormUrl?: string;
   fields?: FormField[];
   submitLabel?: string;
   successMessage?: string;

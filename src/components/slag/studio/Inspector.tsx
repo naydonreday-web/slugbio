@@ -3,6 +3,7 @@ import { Bold, ChevronDown, ChevronRight, ChevronUp, ImagePlus, Italic, RotateCc
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { BLOCK_META } from "@/lib/slag/blocks";
+import { safeGoogleFormUrl } from "@/lib/slag/blocks";
 import { BLOCK_ELEMENTS, elementMeta, elementPreview, getElementStyle, isBold } from "@/lib/slag/elements";
 import { IMAGE_LIBRARY, resolveImage } from "@/lib/slag/images";
 import { POSTER_FONTS } from "@/lib/slag/themes";
@@ -154,6 +155,34 @@ function BlockControls({ doc, selected: b, onPickElement, styleBlock, editBlock 
           {missing.length > 0 && <p className="text-xs leading-relaxed text-amber-700 dark:text-amber-300">Needs {missing.join(", ")}. This block will use its fallback until you add it.</p>}
         </Section>
       )}
+      {b.type === "form" && (
+        <Section title="Google Forms">
+          <label className="flex flex-col gap-1 text-xs font-semibold">
+            Google Form responder link
+            <input
+              type="url"
+              value={b.content.googleFormUrl ?? ""}
+              onChange={(event) => editBlock(b.id, { googleFormUrl: event.target.value || undefined })}
+              placeholder="https://forms.gle/..."
+              aria-invalid={!!b.content.googleFormUrl && !safeGoogleFormUrl(b.content.googleFormUrl)}
+              className={inputCls}
+            />
+          </label>
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            Paste the responder link from Google Forms. Visitors will complete the form on Google; SlagBio no longer collects form answers.
+          </p>
+          {!!b.content.googleFormUrl && !safeGoogleFormUrl(b.content.googleFormUrl) && (
+            <p role="alert" className="text-xs font-semibold text-destructive">
+              Use a secure forms.gle or docs.google.com/forms responder link.
+            </p>
+          )}
+          {!b.content.googleFormUrl && (
+            <p className="text-xs font-semibold text-amber-700 dark:text-amber-300">
+              Add a responder link before publishing.
+            </p>
+          )}
+        </Section>
+      )}
       {b.type === "offer" && (
         <Section title="Offer timing">
           <label className="flex flex-col gap-1 text-xs font-semibold">
@@ -239,11 +268,20 @@ function ElementControls({ doc, selected: b, elementKey: k, editBlock, styleBloc
             ))}
           </div>
           {action.id === "form" ? (
-            <p className="text-xs text-muted-foreground">Opens {doc.blocks.some((x) => x.type === "form") ? "your poster's form" : "a short enquiry form"} in a pop-up.</p>
+            <p className="text-xs text-muted-foreground">
+              {doc.blocks.find((x) => x.type === "form")?.content.googleFormUrl
+                ? "Opens the linked Google Form. Responses stay in your Google account."
+                : "Add a Google Forms responder link to this poster before publishing."}
+            </p>
           ) : (
-            <label className="flex flex-col gap-1 text-xs font-semibold">{action.target}
-              <input value={b.content.target ?? ""} onChange={(e) => editBlock(b.id, { target: e.target.value })} placeholder={action.placeholder} inputMode={action.id === "whatsapp" || action.id === "phone" ? "tel" : action.id === "email" ? "email" : "url"} className={inputCls} />
-            </label>
+            <>
+              <label className="flex flex-col gap-1 text-xs font-semibold">{action.target}
+                <input value={b.content.target ?? ""} onChange={(e) => editBlock(b.id, { target: e.target.value })} placeholder={action.id === "url" ? "https://forms.gle/... or your website" : action.placeholder} inputMode={action.id === "whatsapp" || action.id === "phone" ? "tel" : action.id === "email" ? "email" : "url"} className={inputCls} />
+              </label>
+              {action.id === "url" && (
+                <p className="text-xs text-muted-foreground">Paste a Google Forms responder link here to send people to Google Forms.</p>
+              )}
+            </>
           )}
           {action.id === "whatsapp" && (
             <label className="flex flex-col gap-1 text-xs font-semibold">Pre-filled message

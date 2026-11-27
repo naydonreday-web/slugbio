@@ -42,7 +42,7 @@ export const BLOCK_ELEMENTS: Record<BlockType, ElementMeta[]> = {
   form: [
     { key: "heading", label: "Heading", kind: "text", heading: true },
     { key: "body", label: "Description", kind: "text" },
-    { key: "submitLabel", label: "Submit button", kind: "text", bold: true },
+    { key: "submitLabel", label: "Open form button", kind: "text", bold: true },
   ],
   social: [{ key: "heading", label: "Heading", kind: "text", bold: true }],
   footer: [

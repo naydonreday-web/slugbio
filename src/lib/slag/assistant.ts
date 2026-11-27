@@ -1,4 +1,4 @@
-import { BLOCK_META, cloneBlock, createBlock, enquiryFields, insertIndex, registrationFields } from "./blocks";
+import { BLOCK_META, cloneBlock, createBlock, insertIndex } from "./blocks";
 import { headlineIdeas } from "./generate";
 import { nextImage, pickImageFor } from "./images";
 import { getTheme, parseColor, themeFromBackground, isDark } from "./themes";
@@ -107,8 +107,8 @@ export function interpret(input: string, current: Campaign, selectedId: string |
       } else if (type === "form") {
         const enquiry = /\b(enquir|inquir|contact|question|message|quote)/.test(s);
         block = createBlock("form", enquiry
-          ? { heading: "Send us a message", body: "We usually reply the same day.", fields: enquiryFields(), submitLabel: "Send enquiry", successMessage: "Thanks! We'll get back to you soon." }
-          : { heading: "Register", body: "Takes less than a minute.", fields: registrationFields(), submitLabel: "Register now", successMessage: "You're registered! See you there." });
+          ? { heading: "Send us a message", body: "Continue to our Google Form and we'll get back to you.", submitLabel: "Send enquiry" }
+          : { heading: "Register", body: "Complete the Google Form to reserve your spot.", submitLabel: "Register now" });
       } else if (type === "image") {
         block = createBlock("image", { image: pickImageFor(`${c.purpose} ${c.title} ${s}`) });
       } else {
@@ -132,7 +132,7 @@ export function interpret(input: string, current: Campaign, selectedId: string |
       if (block.type === "cta" && block.content.action === "whatsapp" && !block.content.target) {
         return done("Added a WhatsApp button. Add your WhatsApp number in the panel on the right so it opens a chat with you.", block.id);
       }
-      return done(`Done — I added a ${BLOCK_META[block.type].label.toLowerCase()} block${type === "form" ? " that collects responses into your dashboard" : ""}. It's selected so you can fine-tune it.`, block.id);
+      return done(`Done — I added a ${BLOCK_META[block.type].label.toLowerCase()} block${type === "form" ? ". Select it and paste its Google Forms responder link before publishing" : ""}. It's selected so you can fine-tune it.`, block.id);
     }
   }
 

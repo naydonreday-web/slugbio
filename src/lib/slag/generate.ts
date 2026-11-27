@@ -1,4 +1,4 @@
-import { createBlock, enquiryFields, registrationFields, uid } from "./blocks";
+import { createBlock, uid } from "./blocks";
 import { pickImageFor } from "./images";
 import { applyTemplate } from "./templates/apply";
 import type { TemplateConfig } from "./templates/schema";
@@ -18,10 +18,10 @@ export const PURPOSES: { id: Purpose; label: string; hint: string }[] = [
 
 export const ACTIONS: { id: DesiredAction; label: string; hint: string }[] = [
   { id: "contact", label: "Contact me", hint: "Opens a WhatsApp chat" },
-  { id: "register", label: "Register", hint: "Collects names with a form" },
+  { id: "register", label: "Register", hint: "Opens your Google Form" },
   { id: "buy", label: "Buy", hint: "Links to your shop or WhatsApp" },
   { id: "visit", label: "Visit", hint: "Shows directions to you" },
-  { id: "enquire", label: "Enquire", hint: "Collects questions with a form" },
+  { id: "enquire", label: "Enquire", hint: "Opens your Google Form" },
   { id: "learn", label: "Learn more", hint: "Links to a website" },
 ];
 
@@ -174,8 +174,8 @@ export function generateCampaign(a: WizardAnswers, template?: TemplateConfig): C
   const details = detailsFrom({ ...a, purpose });
   if (details) blocks.push(details);
   blocks.push(ctaFrom({ ...a, purpose, title }));
-  if (a.action === "register") blocks.push(createBlock("form", { heading: "Register", body: "Takes less than a minute.", fields: registrationFields(), submitLabel: "Reserve my spot" }));
-  if (a.action === "enquire") blocks.push(createBlock("form", { heading: "Send us a message", body: "We usually reply the same day.", fields: enquiryFields(), submitLabel: "Send enquiry", successMessage: "Thanks! We'll get back to you soon." }));
+  if (a.action === "register") blocks.push(createBlock("form", { heading: "Register", body: "Complete the Google Form to reserve your spot.", submitLabel: "Reserve my spot" }));
+  if (a.action === "enquire") blocks.push(createBlock("form", { heading: "Send us a message", body: "Continue to our Google Form and we'll get back to you.", submitLabel: "Send enquiry" }));
   if (purpose === "event" || purpose === "food" || purpose === "product") {
     blocks.push(createBlock("social", { heading: "Follow for updates", links: [{ id: uid("s"), platform: "instagram", url: "" }, { id: uid("s"), platform: "tiktok", url: "" }] }));
   }

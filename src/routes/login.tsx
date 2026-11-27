@@ -2,6 +2,7 @@ import { useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, Loader2, LockKeyhole, Mail, Sparkles } from "lucide-react";
 import { Logo } from "@/components/slag/Logo";
+import { Turnstile } from "@/components/auth/Turnstile";
 import { Button } from "@/components/ui/button";
 import { Ambient } from "@/components/slag/Ambient";
 import { inputCls } from "@/components/slag/Choice";
@@ -30,22 +31,34 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [captchaReset, setCaptchaReset] = useState(0);
   const configured = isSupabaseConfigured();
+  const captchaSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!configured || busy) return;
+    if (captchaSiteKey && mode !== "update" && !captchaToken) {
+      setMessage("Complete the security check before continuing.");
+      return;
+    }
     setBusy(true);
     setMessage("");
     try {
       const auth = getSupabaseBrowserClient().auth;
       if (mode === "signin") {
-        const { error } = await auth.signInWithPassword({ email: email.trim(), password });
+        const { error } = await auth.signInWithPassword({
+          email: email.trim(),
+          password,
+          ...(captchaToken ? { captchaToken } : {}),
+        });
         if (error) throw error;
         await navigate({ to: "/" });
       } else if (mode === "reset") {
         const { error } = await auth.resetPasswordForEmail(email.trim(), {
           redirectTo: `${window.location.origin}/login?action=update-password`,
+          ...(captchaToken ? { captchaToken } : {}),
         });
         if (error) throw error;
         setMessage("If an account uses that email, we’ve sent a password reset link.");
@@ -57,7 +70,10 @@ function LoginPage() {
         const { data, error } = await auth.signUp({
           email: email.trim(),
           password,
-          options: { emailRedirectTo: `${window.location.origin}/` },
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+            ...(captchaToken ? { captchaToken } : {}),
+          },
         });
         if (error) throw error;
         if (data.session) await navigate({ to: "/" });
@@ -69,6 +85,10 @@ function LoginPage() {
       );
     } finally {
       setBusy(false);
+      if (captchaSiteKey && mode !== "update") {
+        setCaptchaToken(null);
+        setCaptchaReset((key) => key + 1);
+      }
     }
   };
 
@@ -149,6 +169,9 @@ function LoginPage() {
                     />
                   </span>
                 </label>
+              )}
+              {captchaSiteKey && mode !== "update" && (
+                <Turnstile key={captchaReset} siteKey={captchaSiteKey} onToken={setCaptchaToken} />
               )}
               {message && (
                 <p

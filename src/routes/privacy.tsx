@@ -47,8 +47,8 @@ function PrivacyNotice() {
             <ul className="mt-2 list-disc space-y-2 pl-5">
               <li>Your sign-in email and the name, Lesotho phone number, and usage choices you add to your profile.</li>
               <li>Campaign titles, poster content, design settings, schedules, and template submissions you create.</li>
-              <li>Information visitors submit through forms on your campaigns. Campaign owners can view these responses.</li>
-              <li>A short-lived keyed hash of the request IP address used to limit automated public form submissions. The hash is not displayed to campaign owners, and expired rate-limit rows are cleared during later public activity.</li>
+              <li>SlagBio does not receive answers visitors enter in a Google Form linked from your campaign. Google handles those answers under its own privacy terms.</li>
+              <li>A short-lived keyed hash of the request IP address used to limit automated public campaign metrics. The hash is not displayed to campaign owners, and expired rate-limit rows are cleared during later public activity.</li>
               <li>Basic browser storage used to keep your session, restore your campaign workspace, and avoid counting repeat views in the same browser session.</li>
             </ul>
           </section>
@@ -56,14 +56,14 @@ function PrivacyNotice() {
           <section>
             <h2 className="text-base font-bold">How the information is used</h2>
             <p className="mt-2">
-              SlagBio uses this information to sign you in, save and display your campaigns, let visitors respond to campaign forms, and provide account support. SlagBio does not currently collect payment details or use advertising trackers.
+              SlagBio uses this information to sign you in, save and display your campaigns, measure public poster views and button clicks, and provide account support. SlagBio does not collect answers submitted through Google Forms, payment details, or use advertising trackers.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-bold">Public links and form responses</h2>
+            <h2 className="text-base font-bold">Public links and Google Forms</h2>
             <p className="mt-2">
-              Anyone with a published campaign link can view its poster and submit its public form. Do not publish information you want to keep private. If you respond to a campaign, your response is shared with that campaign's owner. Contact the campaign owner using the contact details on the campaign if you want them to correct or remove your response. Campaign owners can delete individual responses from their campaign analytics page.
+              Anyone with a published campaign link can view its poster and open its linked Google Form. Google receives and stores answers submitted there, and the form owner can view them in Google Forms. Review Google's privacy information before sharing sensitive information. SlagBio may still display responses collected through its retired form feature before retirement; campaign owners can review, export, or delete those historical responses from campaign analytics.
             </p>
           </section>
 

@@ -88,12 +88,12 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockDefinition> = {
   },
   form: {
     type: "form", ...BLOCK_META.form,
-    content: z.object({ heading: text(200).optional(), body: text(600).optional(), fields: z.array(z.object({ id: z.string().min(1), label: text(120), type: z.enum(["text", "email", "tel", "textarea", "select"]), required: z.boolean(), options: z.array(text(120)).max(30).optional() })).max(20).optional(), submitLabel: text(60).optional(), successMessage: text(300).optional() }),
+    content: z.object({ heading: text(200).optional(), body: text(600).optional(), googleFormUrl: text(500).optional(), fields: z.array(z.object({ id: z.string().min(1), label: text(120), type: z.enum(["text", "email", "tel", "textarea", "select"]), required: z.boolean(), options: z.array(text(120)).max(30).optional() })).max(20).optional(), submitLabel: text(60).optional(), successMessage: text(300).optional() }),
     styleProps: PRESENTATION,
     variants: ["default"],
     rendering: { position: "any", maxPerPoster: 1 },
-    responsive: "Single column, inputs at least 16px so phones don't zoom.",
-    ai: "Ask for as little as possible. Never remove a field that already has responses.",
+    responsive: "Single Google Forms button that opens the campaign owner's responder link.",
+    ai: "Link to Google Forms for registration or enquiries; never collect responses in SlagBio.",
   },
   social: {
     type: "social", ...BLOCK_META.social,

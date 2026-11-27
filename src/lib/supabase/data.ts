@@ -181,19 +181,6 @@ export async function saveProfile(userId: string, profile: Profile): Promise<voi
   if (error) throw error;
 }
 
-export async function submitCampaignResponse(
-  campaignId: string,
-  formBlockId: string,
-  values: Record<string, string>,
-  id: string,
-  honeypot = "",
-): Promise<void> {
-  const { error } = await getSupabaseBrowserClient().functions.invoke("campaign-public", {
-    body: { action: "submit", campaignId, formBlockId, responseId: id, values, honeypot },
-  });
-  if (error) throw error;
-}
-
 export async function deleteCampaignResponse(campaignId: string, responseId: string): Promise<void> {
   const { data, error } = await getSupabaseBrowserClient()
     .from("campaign_responses")

@@ -12,7 +12,8 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 export default defineConfig({
   nitro: {
     cloudflare: {
-      wrangler: { preview_urls: false },
+      // @ts-expect-error Nitro merges Wrangler options here; the Lovable wrapper omits this field.
+      wrangler: { name: "go", preview_urls: false },
     },
   },
   tanstackStart: {

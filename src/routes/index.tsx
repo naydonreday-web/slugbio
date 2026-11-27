@@ -41,7 +41,7 @@ function Dashboard() {
     { label: "Total campaigns", value: campaigns.length },
     { label: "Active", value: withStatus.filter((x) => x.s === "active").length },
     { label: "Total views", value: campaigns.reduce((n, c) => n + c.views, 0) },
-    { label: "Responses", value: campaigns.reduce((n, c) => n + c.responses.length, 0) },
+    { label: "Past responses", value: campaigns.reduce((n, c) => n + c.responses.length, 0) },
   ];
   const expiring = withStatus
     .filter(({ c, s }) => s === "active" && (daysLeft(c.expiresAt) ?? 99) <= 10)
@@ -170,8 +170,8 @@ function Dashboard() {
               </ul>
             </div>
             <div className="glass rounded-[10px] p-5">
-              <div className="flex items-center gap-2 text-label-caps text-muted-foreground uppercase"><Inbox className="h-4 w-4" /> Recent responses</div>
-              {ready && recent.length === 0 && <p className="mt-4 text-sm text-muted-foreground">Form responses from your live posters will appear here.</p>}
+              <div className="flex items-center gap-2 text-label-caps text-muted-foreground uppercase"><Inbox className="h-4 w-4" /> Past responses</div>
+              {ready && recent.length === 0 && <p className="mt-4 text-sm text-muted-foreground">Historical SlagBio submissions remain here for reference.</p>}
               <ul className="mt-3 flex flex-col">
                 {recent.map(({ c, r }) => {
                   const first = Object.values(r.values).find(Boolean) ?? "Anonymous";

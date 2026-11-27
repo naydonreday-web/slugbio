@@ -13,14 +13,11 @@ import {
   MessageCircle,
   Music2,
   ArrowUpRight,
-  Check,
-  Loader2,
   Mail,
   ExternalLink,
 } from "lucide-react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { elementCss, elementMeta } from "@/lib/slag/elements";
-import { BLOCK_META, enquiryFields, whatsappLink, safeUrl } from "@/lib/slag/blocks";
+import { whatsappLink, safeUrl, safeGoogleFormUrl } from "@/lib/slag/blocks";
 import { resolveImage } from "@/lib/slag/images";
 import { POSTER_FONTS, isDark, readableAccent } from "@/lib/slag/themes";
 import { renderLayout, type RenderLayout } from "@/lib/slag/templates/apply";
@@ -62,11 +59,6 @@ export interface PosterProps {
   onSelectElement?: (blockId: string, key: ElementKey) => void;
   onEdit?: (blockId: string, patch: Partial<BlockContent>) => void;
   onCtaClick?: (block: Block) => void;
-  onSubmit?: (
-    block: Block,
-    values: Record<string, string>,
-    honeypot?: string,
-  ) => Promise<void> | void;
   className?: string;
 }
 
@@ -115,7 +107,6 @@ export function PosterRenderer({
   onSelectElement,
   onEdit,
   onCtaClick,
-  onSubmit,
   className,
 }: PosterProps) {
   const { theme } = campaign;
@@ -156,7 +147,6 @@ export function PosterRenderer({
   const renderedBlocks = campaign.blocks
     .filter((b) => !focusBlockId || b.id === focusBlockId)
     .filter((b) => L.supported.has(b.type));
-  const [modalForm, setModalForm] = useState<Block | null>(null);
   const editing = mode === "edit";
   const interactive = mode === "preview" || mode === "public";
 
@@ -181,20 +171,10 @@ export function PosterRenderer({
     onCtaClick?.(b);
     if (b.content.action === "form") {
       const form = campaign.blocks.find((x) => x.type === "form");
-      setModalForm(
-        form ?? {
-          id: "modal-form",
-          type: "form",
-          content: {
-            heading: "Get in touch",
-            body: "Leave your details and we'll reply soon.",
-            fields: enquiryFields(),
-            submitLabel: "Send",
-            successMessage: "Thanks! We'll be in touch.",
-          },
-          style: { align: "left", padding: 24, headingScale: 0.9, headingWeight: 700 },
-        },
-      );
+      const googleFormUrl = safeGoogleFormUrl(form?.content.googleFormUrl);
+      if (googleFormUrl) {
+        window.open(googleFormUrl, "_blank", "noopener,noreferrer");
+      }
       return;
     }
     const href = ctaHref(b);
@@ -236,7 +216,6 @@ export function PosterRenderer({
               styleFacts={styleFacts}
               onEdit={onEdit}
               onCta={handleCta}
-              onSubmit={onSubmit}
               selectedEl={selectedId === b.id ? (selectedElement ?? null) : null}
               onPickEl={editing ? onSelectElement : undefined}
             />
@@ -251,24 +230,6 @@ export function PosterRenderer({
           <div className="text-lg font-semibold">This poster is empty</div>
           <div className="text-sm">Add a block or ask the assistant to build one.</div>
         </div>
-      )}
-      {interactive && (
-        <Dialog open={!!modalForm} onOpenChange={(o) => !o && setModalForm(null)}>
-          <DialogContent className="max-w-md overflow-hidden border-0 p-0" style={vars}>
-            <DialogTitle className="sr-only">{modalForm?.content.heading ?? "Form"}</DialogTitle>
-            {modalForm && (
-              <BlockBody
-                block={{ ...modalForm, style: { ...modalForm.style, padding: 28 } }}
-                theme={theme}
-                L={L}
-                mode={mode}
-                styleFacts={styleFacts}
-                onSubmit={onSubmit}
-                onCta={handleCta}
-              />
-            )}
-          </DialogContent>
-        </Dialog>
       )}
     </div>
   );
@@ -474,7 +435,6 @@ type BodyProps = {
   styleFacts: StyleContext;
   onEdit?: PosterProps["onEdit"];
   onCta: (b: Block) => void;
-  onSubmit?: PosterProps["onSubmit"];
   selectedEl?: ElementKey | null;
   onPickEl?: PosterProps["onSelectElement"];
 };
@@ -527,7 +487,6 @@ function BlockBody({
   styleFacts,
   onEdit,
   onCta,
-  onSubmit,
   selectedEl,
   onPickEl,
 }: BodyProps) {
@@ -1147,7 +1106,7 @@ function BlockBody({
         c.action === "whatsapp"
           ? "Opens WhatsApp"
           : c.action === "form"
-            ? "Opens a short form"
+            ? "Opens the linked Google Form"
             : c.action === "phone"
               ? "Calls directly"
               : c.action === "email"
@@ -1267,7 +1226,6 @@ function BlockBody({
           L={L}
           mode={mode}
           onEdit={onEdit}
-          onSubmit={onSubmit}
           selectedEl={selectedEl}
           onPickEl={onPickEl}
         />
@@ -1413,7 +1371,6 @@ function FormBlock({
   L,
   mode,
   onEdit,
-  onSubmit,
   selectedEl,
   onPickEl,
 }: {
@@ -1421,70 +1378,21 @@ function FormBlock({
   L: RenderLayout;
   mode: PosterMode;
   onEdit?: PosterProps["onEdit"];
-  onSubmit?: PosterProps["onSubmit"];
   selectedEl?: ElementKey | null;
   onPickEl?: PosterProps["onSelectElement"];
 }) {
   const editing = mode === "edit";
   const c = b.content;
-  const [values, setValues] = useState<Record<string, string>>({});
-  const [honeypot, setHoneypot] = useState("");
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [state, setState] = useState<"idle" | "sending" | "done">("idle");
-  const [submitError, setSubmitError] = useState("");
-  const live = mode === "preview" || mode === "public";
+  const responderUrl = safeGoogleFormUrl(c.googleFormUrl);
   const T = (k: ElementKey, style?: CSSProperties) =>
     textProps(b, k, editing, onEdit, selectedEl, onPickEl, style);
-  const SubmitBtn = mode === "thumb" ? "span" : "button";
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!live) return;
-    const errs: Record<string, string> = {};
-    for (const f of c.fields ?? []) {
-      const v = (values[f.id] ?? "").trim();
-      if (f.required && !v) errs[f.id] = "Required";
-      else if (v && f.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v))
-        errs[f.id] = "Enter a valid email";
-      else if (v && f.type === "tel" && v.replace(/[^\d]/g, "").length < 8)
-        errs[f.id] = "Enter a valid phone number";
-      else if (v.length > 1000) errs[f.id] = "Too long";
-    }
-    setErrors(errs);
-    if (Object.keys(errs).length) return;
-    setState("sending");
-    setSubmitError("");
-    try {
-      await onSubmit?.(
-        b,
-        Object.fromEntries(Object.entries(values).map(([k, v]) => [k, v.trim()])),
-        honeypot,
-      );
-      setState("done");
-    } catch {
-      setSubmitError("We couldn't send your response. Check your connection and try again.");
-      setState("idle");
-    }
-  };
-
-  const fieldStyle: CSSProperties =
-    L.surface === "filled"
-      ? {
-          background: "var(--p-surface)",
-          color: "var(--p-text)",
-          borderRadius: "min(var(--p-radius), 14px)",
-          border: "1px solid color-mix(in oklab, var(--p-text) 12%, transparent)",
-        }
-      : {
-          background: "transparent",
-          color: "var(--p-text)",
-          borderRadius: L.surface === "plain" ? 0 : "min(var(--p-radius), 14px)",
-          border:
-            L.surface === "plain"
-              ? "none"
-              : "1.5px solid color-mix(in oklab, var(--p-text) 24%, transparent)",
-          borderBottom: "1.5px solid color-mix(in oklab, var(--p-text) 30%, transparent)",
-        };
+  const buttonClass = "mt-2 inline-flex min-h-13 w-full items-center justify-center gap-2 px-6 py-3.5 text-[16px] font-bold";
+  const buttonStyle = {
+    background: "var(--p-accent)",
+    color: "var(--p-accent-text)",
+    borderRadius: "var(--p-radius)",
+    ...elementCss(b, "submitLabel"),
+  } as CSSProperties;
 
   return (
     <div
@@ -1499,7 +1407,7 @@ function FormBlock({
         <EditableText
           as="h2"
           {...T("heading", headingStyle(b, "clamp(24px, 7cqi, 40px)", L))}
-          placeholder="Form heading"
+          placeholder="Registration heading"
           className="mb-1 w-full"
         />
       )}
@@ -1510,151 +1418,36 @@ function FormBlock({
           className="mb-5 w-full text-[15px]"
         />
       )}
-      {state === "done" ? (
-        <div
-          className="flex flex-col items-center gap-3 p-8 text-center"
-          style={{ background: "var(--p-surface)", borderRadius: "min(var(--p-radius), 24px)" }}
+      {responderUrl && mode !== "edit" && mode !== "thumb" ? (
+        <a href={responderUrl} target="_blank" rel="noopener noreferrer" className={buttonClass} style={buttonStyle}>
+          {c.submitLabel || "Open Google Form"}
+          <ExternalLink className="h-4 w-4" aria-hidden="true" />
+        </a>
+      ) : editing ? (
+        <button
+          type="button"
+          data-el="submitLabel"
+          onClick={(event) => {
+            event.stopPropagation();
+            onPickEl?.(b.id, "submitLabel");
+          }}
+          className={buttonClass}
+          style={buttonStyle}
         >
-          <span
-            className="flex h-12 w-12 items-center justify-center rounded-full"
-            style={{ background: "var(--p-accent)", color: "var(--p-accent-text)" }}
-          >
-            <Check className="h-6 w-6" />
-          </span>
-          <div className="text-lg font-semibold">{c.successMessage || "Thank you!"}</div>
-          {mode === "preview" && (
-            <div className="text-xs" style={{ color: "var(--p-muted)" }}>
-              Test submission — not saved to your responses.
-            </div>
-          )}
-          <button
-            type="button"
-            className="text-sm underline underline-offset-4"
-            onClick={() => {
-              setValues({});
-              setState("idle");
-            }}
-          >
-            Submit another response
-          </button>
-        </div>
+          {c.submitLabel || "Open Google Form"}
+          <ExternalLink className="h-4 w-4" aria-hidden="true" />
+        </button>
+      ) : mode === "thumb" ? (
+        <span className={buttonClass} style={buttonStyle}>{c.submitLabel || "Open Google Form"}</span>
       ) : (
-        <form
-          onSubmit={submit}
-          className={cn("flex flex-col gap-3", mode === "thumb" && "pointer-events-none")}
-          noValidate
-        >
-          {mode === "public" && (
-            <label
-              aria-hidden="true"
-              className="absolute -left-[10000px] h-px w-px overflow-hidden"
-            >
-              Leave this field empty
-              <input
-                type="text"
-                name="website"
-                tabIndex={-1}
-                autoComplete="off"
-                value={honeypot}
-                onChange={(event) => setHoneypot(event.target.value)}
-              />
-            </label>
-          )}
-          {(c.fields ?? []).map((f) => {
-            const common = {
-              id: `${b.id}-${f.id}`,
-              value: values[f.id] ?? "",
-              onChange: (
-                e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
-              ) => setValues((v) => ({ ...v, [f.id]: e.target.value })),
-              className:
-                "w-full px-4 py-3 text-[16px] outline-none focus:ring-2 focus:ring-[color:var(--p-accent)]",
-              style: fieldStyle,
-              tabIndex: live ? 0 : -1,
-              "aria-invalid": !!errors[f.id],
-            };
-            return (
-              <label
-                key={f.id}
-                htmlFor={common.id}
-                className={cn("flex flex-col gap-1.5", editing && "pointer-events-none")}
-              >
-                <span className="text-sm font-semibold">
-                  {f.label}
-                  {f.required && <span style={{ color: "var(--p-accent-ink)" }}> *</span>}
-                </span>
-                {f.type === "textarea" ? (
-                  <textarea rows={3} maxLength={1000} {...common} />
-                ) : f.type === "select" ? (
-                  <select {...common}>
-                    <option value="">Choose…</option>
-                    {(f.options ?? []).map((o) => (
-                      <option key={o}>{o}</option>
-                    ))}
-                  </select>
-                ) : (
-                  <input type={f.type} maxLength={200} {...common} />
-                )}
-                {errors[f.id] && (
-                  <span className="text-xs font-semibold" style={{ color: "var(--p-accent-ink)" }}>
-                    {errors[f.id]}
-                  </span>
-                )}
-              </label>
-            );
-          })}
-          {submitError && (
-            <p
-              role="alert"
-              className="text-sm font-semibold"
-              style={{ color: "var(--p-accent-ink)" }}
-            >
-              {submitError}
-            </p>
-          )}
-          <SubmitBtn
-            type={mode === "thumb" ? undefined : "submit"}
-            disabled={mode === "thumb" ? undefined : state === "sending"}
-            onClick={
-              editing
-                ? (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onPickEl?.(b.id, "submitLabel");
-                  }
-                : undefined
-            }
-            data-el={editing ? "submitLabel" : undefined}
-            className={cn(
-              "mt-2 inline-flex min-h-13 items-center justify-center gap-2 px-6 py-3.5 text-[16px] font-bold disabled:opacity-70",
-              editing && "outline-offset-4",
-              editing &&
-                (selectedEl === "submitLabel"
-                  ? "outline-[3px] outline-solid outline-primary"
-                  : "outline-2 outline-dashed outline-transparent hover:outline-primary/70"),
-            )}
-            style={{
-              background: "var(--p-accent)",
-              color: "var(--p-accent-text)",
-              borderRadius: "var(--p-radius)",
-              ...elementCss(b, "submitLabel"),
-            }}
-            tabIndex={live ? 0 : -1}
-          >
-            {state === "sending" && <Loader2 className="h-4 w-4 animate-spin" />}
-            {editing ? (
-              <EditableText
-                as="span"
-                {...T("submitLabel")}
-                value={c.submitLabel ?? "Submit"}
-                style={undefined}
-                selected={false}
-              />
-            ) : (
-              c.submitLabel || "Submit"
-            )}
-          </SubmitBtn>
-        </form>
+        <p role="status" className="mt-3 rounded-xl border border-glass-border bg-glass p-3 text-sm" style={{ color: "var(--p-muted)" }}>
+          Add a Google Forms responder link in the editor before publishing this campaign.
+        </p>
+      )}
+      {responderUrl && mode !== "edit" && mode !== "thumb" && (
+        <p className="mt-3 text-center text-xs" style={{ color: "var(--p-muted)" }}>
+          Responses are collected by Google Forms.
+        </p>
       )}
     </div>
   );

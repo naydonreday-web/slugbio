@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PosterRenderer } from "@/components/slag/poster/PosterRenderer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { addResponse, recordClick, recordView, useCampaignBySlug } from "@/lib/slag/store";
+import { recordClick, recordView, useCampaignBySlug } from "@/lib/slag/store";
 import { deriveStatus, formatDate } from "@/lib/slag/publishing";
 import { SEED_META } from "@/lib/slag/seed";
 import { whatsappLink } from "@/lib/slag/blocks";
@@ -10,8 +10,7 @@ import { POSTER_FONTS } from "@/lib/slag/themes";
 import type { Campaign } from "@/lib/slag/types";
 import { MessageCircle } from "lucide-react";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
-import { loadPublicCampaign, submitCampaignResponse } from "@/lib/supabase/data";
-import { uid } from "@/lib/slag/blocks";
+import { loadPublicCampaign } from "@/lib/supabase/data";
 
 export const Route = createFileRoute("/c/$slug")({
   validateSearch: (s: Record<string, unknown>): { state?: "expired" } =>
@@ -176,11 +175,6 @@ function PublicCampaign() {
           campaign={campaign}
           mode="public"
           onCtaClick={() => recordClick(campaign.id)}
-          onSubmit={(formBlock, v, honeypot) =>
-            configured
-              ? submitCampaignResponse(campaign.id, formBlock.id, v, uid("r"), honeypot)
-              : addResponse(campaign.id, v)
-          }
         />
         <div className="pt-4 pb-6 text-center text-[11px]" style={{ color: campaign.theme.muted }}>
           <Link to="/" className="hover:underline">

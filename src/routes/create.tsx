@@ -868,8 +868,8 @@ function StepAction({ a, up, errors }: StepProps & { errors: Record<string, stri
           {(a.action === "register" || a.action === "enquire") && (
             <p className="flex items-start gap-2 text-sm text-muted-foreground">
               <ClipboardList className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> I'll add a{" "}
-              {a.action === "register" ? "registration" : "enquiry"} form. Responses appear on your
-              dashboard.
+              {a.action === "register" ? "registration" : "enquiry"} block. Add a Google Forms
+              responder link in the editor before publishing.
             </p>
           )}
         </div>

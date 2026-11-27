@@ -64,7 +64,7 @@ export function CampaignCard({ campaign: c }: { campaign: Campaign }) {
         </div>
         <div className="flex items-center gap-3 text-xs font-semibold text-muted-foreground">
           <span className="flex items-center gap-1"><Eye className="h-3.5 w-3.5" /> {c.views.toLocaleString()} views</span>
-          <span>{c.responses.length} responses</span>
+          <span>{c.responses.length} past responses</span>
         </div>
         <div className="mt-auto flex items-center gap-1.5 border-t border-glass-border pt-3">
           <Button asChild size="sm" className="h-9 rounded-full px-4">
