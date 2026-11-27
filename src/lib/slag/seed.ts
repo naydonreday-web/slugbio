@@ -128,14 +128,6 @@ export function buildSeedCampaigns(nowDate = new Date()): Campaign[] {
     daily: daily(7, nowDate, 230),
     payments: [{ id: uid("pay"), amount: 89, vat: 13.35, total: 102.35, method: "M-Pesa", paidAt: iso(neonStart - DAY), durationDays: 14 }],
   });
-  const form = neon.blocks.find((b) => b.type === "form");
-  const names = ["Thabo Mokoena", "Palesa Ntho", "Kamohelo Sefali", "Neo Lebona", "Rethabile Moeti"];
-  neon.responses = names.map((n, i) => ({
-    id: uid("r"),
-    submittedAt: iso(now - i * 5 * 3600000),
-    values: { [form!.content.fields![0].id]: n, [form!.content.fields![1].id]: `+266 58${(10 + i) * 37}0 ${1200 + i * 31}`, [form!.content.fields![2].id]: i % 2 ? "" : `${n.split(" ")[0].toLowerCase()}@mail.com` },
-  }));
-
   const coffeeStart = now + 2 * DAY;
   const coffee = base({
     title: "Artisan Coffee Roasters Pop-up", slug: "artisan-coffee-popup", purpose: "food", theme: getTheme("warm-kraft"), blocks: coffeeBlocks(),
