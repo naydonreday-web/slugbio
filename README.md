@@ -1,6 +1,6 @@
-# SlagBio
+# SlugBio
 
-SlagBio helps Lesotho-based creators make interactive campaign posters and share them as link-only pages. Publishing is free at launch. Payments and public discovery are not enabled.
+SlugBio helps creators make interactive campaign posters and share them as link-only pages. Publishing is free at launch. Payments and public discovery are not enabled.
 
 ## Local development
 
