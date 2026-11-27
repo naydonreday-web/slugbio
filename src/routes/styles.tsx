@@ -20,11 +20,11 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/styles")({
   head: () => ({
     meta: [
-      { title: "Poster styles — SlagBio" },
+      { title: "Poster styles — SlugBio" },
       {
         name: "description",
         content:
-          "Explore the poster styles SlagBio can draw and see how they adapt to real campaign content.",
+          "Explore the poster styles SlugBio can draw and see how they adapt to real campaign content.",
       },
     ],
   }),
@@ -82,7 +82,7 @@ function StylesGallery() {
         </Button>
         <div className="mt-5 max-w-3xl">
           <span className="text-label-caps tracking-widest text-muted-foreground">
-            SLAGBIO DESIGN SYSTEM
+            SLUGBIO DESIGN SYSTEM
           </span>
           <h1 className="mt-2 text-display-sm font-extrabold">Poster styles</h1>
           <p className="mt-3 text-muted-foreground">

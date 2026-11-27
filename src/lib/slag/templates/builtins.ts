@@ -1,13 +1,13 @@
 import { BLOCK_REGISTRY_VERSION, BLOCK_TYPES } from "./registry";
 import { templateSchema, type TemplateConfig } from "./schema";
 
-/** The original SlagBio look. Campaigns without a template render with it, unchanged. */
+/** The original SlugBio look. Campaigns without a template render with it, unchanged. */
 export const CLASSIC: TemplateConfig = templateSchema.parse({
   schemaVersion: 1,
   id: "classic",
   version: "1.0.0",
   name: "Classic",
-  description: "Full-bleed photo hero, soft cards and pill buttons — the original SlagBio poster.",
+  description: "Full-bleed photo hero, soft cards and pill buttons — the original SlugBio poster.",
   category: "general",
   tags: ["bold", "photo", "cards"],
   source: "builtin",

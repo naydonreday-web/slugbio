@@ -15,10 +15,10 @@ import { useAuthGuard } from "@/lib/supabase/use-auth";
 export const Route = createFileRoute("/onboarding")({
   head: () => ({
     meta: [
-      { title: "Set up your profile — SlagBio" },
-      { name: "description", content: "Add your name and Lesotho phone number to start creating campaign posters on SlagBio." },
-      { property: "og:title", content: "Set up your profile — SlagBio" },
-      { property: "og:description", content: "Add your name and Lesotho phone number to start creating campaign posters on SlagBio." },
+      { title: "Set up your profile — SlugBio" },
+      { name: "description", content: "Add your name and Lesotho phone number to start creating campaign posters on SlugBio." },
+      { property: "og:title", content: "Set up your profile — SlugBio" },
+      { property: "og:description", content: "Add your name and Lesotho phone number to start creating campaign posters on SlugBio." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -77,8 +77,8 @@ function ProfileForm({ initial }: { initial?: Profile }) {
           <Sparkles className="h-4 w-4 text-primary" />
         </span>
         <div className="min-w-0 rounded-2xl rounded-tl-none border border-glass-border bg-glass-strong px-4 py-3">
-          <h1 className="text-[22px] leading-tight font-bold tracking-tight md:text-headline-md">{editing ? "Your details" : "Welcome to SlagBio. Let's get you set up."}</h1>
-          <p className="mt-1.5 text-[15px] text-muted-foreground">{editing ? "Update your name, number or how you plan to use SlagBio." : "Just two details, and one optional question."}</p>
+          <h1 className="text-[22px] leading-tight font-bold tracking-tight md:text-headline-md">{editing ? "Your details" : "Welcome to SlugBio. Let's get you set up."}</h1>
+          <p className="mt-1.5 text-[15px] text-muted-foreground">{editing ? "Update your name, number or how you plan to use SlugBio." : "Just two details, and one optional question."}</p>
         </div>
       </div>
 
@@ -109,7 +109,7 @@ function ProfileForm({ initial }: { initial?: Profile }) {
 
         <fieldset className="flex flex-col gap-2.5">
           <legend className="mb-2.5 text-sm font-semibold">
-            What will you use SlagBio for? <span className="font-normal text-muted-foreground">(optional)</span>
+            What will you use SlugBio for? <span className="font-normal text-muted-foreground">(optional)</span>
           </legend>
           <div className="flex flex-wrap gap-2">
             {USAGES.map((u) => (

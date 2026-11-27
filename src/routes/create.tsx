@@ -60,17 +60,17 @@ export const Route = createFileRoute("/create")({
   }),
   head: () => ({
     meta: [
-      { title: "Create a campaign — SlagBio" },
+      { title: "Create a campaign — SlugBio" },
       {
         name: "description",
         content:
-          "Answer six quick questions and SlagBio's AI designs an editable, shareable campaign poster for you.",
+          "Answer six quick questions and SlugBio's AI designs an editable, shareable campaign poster for you.",
       },
-      { property: "og:title", content: "Create a campaign — SlagBio" },
+      { property: "og:title", content: "Create a campaign — SlugBio" },
       {
         property: "og:description",
         content:
-          "Answer six quick questions and SlagBio's AI designs an editable, shareable campaign poster for you.",
+          "Answer six quick questions and SlugBio's AI designs an editable, shareable campaign poster for you.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

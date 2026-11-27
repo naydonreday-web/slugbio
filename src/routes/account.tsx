@@ -14,8 +14,8 @@ import { useAuthGuard } from "@/lib/supabase/use-auth";
 export const Route = createFileRoute("/account")({
   head: () => ({
     meta: [
-      { title: "Account settings — SlagBio" },
-      { name: "description", content: "Manage your SlagBio account and personal data." },
+      { title: "Account settings — SlugBio" },
+      { name: "description", content: "Manage your SlugBio account and personal data." },
     ],
   }),
   component: AccountSettings,

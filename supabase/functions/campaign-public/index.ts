@@ -68,7 +68,7 @@ Deno.serve(async (request) => {
     return json({ error: "Invalid request." }, 400);
   }
   if (payload && typeof payload === "object" && (payload as Record<string, unknown>).action === "submit")
-    return json({ error: "SlagBio form submissions have been retired. Use the campaign's Google Form." }, 410);
+    return json({ error: "SlugBio form submissions have been retired. Use the campaign's Google Form." }, 410);
   if (!isAction(payload)) return json({ error: "Invalid campaign action." }, 400);
 
   const action = payload;

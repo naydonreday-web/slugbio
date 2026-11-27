@@ -14,8 +14,8 @@ export const Route = createFileRoute("/login")({
     search.action === "update-password" ? { action: "update-password" } : {},
   head: () => ({
     meta: [
-      { title: "Sign in — SlagBio" },
-      { name: "description", content: "Sign in or create a SlagBio account." },
+      { title: "Sign in — SlugBio" },
+      { name: "description", content: "Sign in or create a SlugBio account." },
     ],
   }),
   component: LoginPage,
@@ -221,7 +221,7 @@ function LoginPage() {
 
           {configured && (mode === "signin" || mode === "signup") && (
             <p className="mt-6 text-center text-sm text-muted-foreground">
-              {mode === "signin" ? "New to SlagBio?" : "Already have an account?"}{" "}
+              {mode === "signin" ? "New to SlugBio?" : "Already have an account?"}{" "}
               <button
                 type="button"
                 onClick={() => {

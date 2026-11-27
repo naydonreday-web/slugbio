@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/admin/templates")({
   head: () => ({
     meta: [
-      { title: "Template review — SlagBio" },
+      { title: "Template review — SlugBio" },
       { name: "description", content: "Review and approve submitted campaign templates." },
     ],
   }),

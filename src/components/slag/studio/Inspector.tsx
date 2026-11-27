@@ -169,7 +169,7 @@ function BlockControls({ doc, selected: b, onPickElement, styleBlock, editBlock 
             />
           </label>
           <p className="text-xs leading-relaxed text-muted-foreground">
-            Paste the responder link from Google Forms. Visitors will complete the form on Google; SlagBio no longer collects form answers.
+            Paste the responder link from Google Forms. Visitors will complete the form on Google; SlugBio no longer collects form answers.
           </p>
           {!!b.content.googleFormUrl && !safeGoogleFormUrl(b.content.googleFormUrl) && (
             <p role="alert" className="text-xs font-semibold text-destructive">

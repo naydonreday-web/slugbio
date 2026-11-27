@@ -15,10 +15,10 @@ import { useAuthGuard } from "@/lib/supabase/use-auth";
 export const Route = createFileRoute("/campaigns/")({
   head: () => ({
     meta: [
-      { title: "All campaigns — SlagBio" },
-      { name: "description", content: "Every SlagBio poster you've made: drafts, live, scheduled, ended and archived campaigns." },
-      { property: "og:title", content: "All campaigns — SlagBio" },
-      { property: "og:description", content: "Every SlagBio poster you've made: drafts, live, scheduled, ended and archived campaigns." },
+      { title: "All campaigns — SlugBio" },
+      { name: "description", content: "Every SlugBio poster you've made: drafts, live, scheduled, ended and archived campaigns." },
+      { property: "og:title", content: "All campaigns — SlugBio" },
+      { property: "og:description", content: "Every SlugBio poster you've made: drafts, live, scheduled, ended and archived campaigns." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

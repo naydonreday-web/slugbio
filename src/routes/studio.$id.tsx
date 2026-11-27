@@ -19,9 +19,9 @@ export const Route = createFileRoute("/studio/$id")({
   validateSearch: (s: Record<string, unknown>): { fresh?: boolean } => (s.fresh ? { fresh: true } : {}),
   head: () => ({
     meta: [
-      { title: "Campaign Studio — SlagBio" },
+      { title: "Campaign Studio — SlugBio" },
       { name: "description", content: "Edit your campaign poster with AI or directly, with a live preview." },
-      { property: "og:title", content: "Campaign Studio — SlagBio" },
+      { property: "og:title", content: "Campaign Studio — SlugBio" },
       { property: "og:description", content: "Edit your campaign poster with AI or directly, with a live preview." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

@@ -179,7 +179,7 @@ export function generateCampaign(a: WizardAnswers, template?: TemplateConfig): C
   if (purpose === "event" || purpose === "food" || purpose === "product") {
     blocks.push(createBlock("social", { heading: "Follow for updates", links: [{ id: uid("s"), platform: "instagram", url: "" }, { id: uid("s"), platform: "tiktok", url: "" }] }));
   }
-  blocks.push(createBlock("footer", { text: title, small: purpose === "offer" ? "Offer subject to availability. Terms apply." : "Shared with SlagBio" }));
+  blocks.push(createBlock("footer", { text: title, small: purpose === "offer" ? "Offer subject to availability. Terms apply." : "Shared with SlugBio" }));
 
   const now = new Date().toISOString();
   const campaign: Campaign = {

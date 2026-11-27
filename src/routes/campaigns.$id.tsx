@@ -13,9 +13,9 @@ import { deleteCampaignResponse } from "@/lib/supabase/data";
 export const Route = createFileRoute("/campaigns/$id")({
   head: () => ({
     meta: [
-      { title: "Campaign analytics — SlagBio" },
+      { title: "Campaign analytics — SlugBio" },
       { name: "description", content: "Views, button clicks and historical responses for your campaign." },
-      { property: "og:title", content: "Campaign analytics — SlagBio" },
+      { property: "og:title", content: "Campaign analytics — SlugBio" },
       { property: "og:description", content: "Views, button clicks and historical responses for your campaign." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -71,8 +71,8 @@ function Details() {
           ))}
         </div>
         <div className="glass mt-6 rounded-[10px] p-5">
-          <div className="flex items-center justify-between"><div><h2 className="text-headline-md">Past SlagBio responses</h2><p className="mt-1 text-xs text-muted-foreground">Historical submissions from before SlagBio forms were retired.</p></div><Button variant="glass" size="sm" onClick={exportCsv} disabled={!c.responses.length}><Download /> Export CSV</Button></div>
-          {c.responses.length === 0 ? <p className="mt-3 text-sm text-muted-foreground">No historical SlagBio responses.</p> : (
+          <div className="flex items-center justify-between"><div><h2 className="text-headline-md">Past SlugBio responses</h2><p className="mt-1 text-xs text-muted-foreground">Historical submissions from before SlugBio forms were retired.</p></div><Button variant="glass" size="sm" onClick={exportCsv} disabled={!c.responses.length}><Download /> Export CSV</Button></div>
+          {c.responses.length === 0 ? <p className="mt-3 text-sm text-muted-foreground">No historical SlugBio responses.</p> : (
             <div className="mt-4 overflow-x-auto"><table className="w-full text-sm"><thead><tr className="text-left text-muted-foreground"><th className="py-2 pr-4">Submitted</th>{keys.map((k) => <th key={k} className="py-2 pr-4">{labels[k] ?? "Field"}</th>)}<th className="py-2 pl-4 text-right">Actions</th></tr></thead>
               <tbody>{c.responses.map((r) => <tr key={r.id} className="border-t border-glass-border"><td className="py-2 pr-4">{formatDateTime(r.submittedAt)}</td>{keys.map((k) => <td key={k} className="py-2 pr-4">{r.values[k]}</td>)}<td className="py-2 text-right"><Button variant="ghost" size="icon" aria-label="Delete response" title="Delete response" disabled={deletingResponseId === r.id} onClick={() => void removeResponse(r.id)}>{deletingResponseId === r.id ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}</Button></td></tr>)}</tbody></table></div>
           )}

@@ -98,7 +98,7 @@ export function safeUrl(url?: string): string | null {
   }
 }
 
-/** Accept only Google Forms responder links; campaigns never collect responses in SlagBio. */
+/** Accept only Google Forms responder links; campaigns never collect responses in SlugBio. */
 export function safeGoogleFormUrl(url?: string): string | null {
   if (!url) return null;
   try {

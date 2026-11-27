@@ -17,8 +17,8 @@ export const Route = createFileRoute("/c/$slug")({
     s.state === "expired" ? { state: "expired" } : {},
   head: ({ params }) => {
     const m = SEED_META[params.slug];
-    const title = m ? `${m.title} — SlagBio` : "Campaign — SlagBio";
-    const description = m?.description ?? "An interactive campaign poster shared with SlagBio.";
+    const title = m ? `${m.title} — SlugBio` : "Campaign — SlugBio";
+    const description = m?.description ?? "An interactive campaign poster shared with SlugBio.";
     return {
       meta: [
         { title },
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/c/$slug")({
   component: PublicCampaign,
 });
 
-/** Campaign-less states (not found) keep SlagBio's look; anything tied to a campaign wears that campaign's theme. */
+/** Campaign-less states (not found) keep SlugBio's look; anything tied to a campaign wears that campaign's theme. */
 function Notice({
   campaign,
   label,
@@ -56,7 +56,7 @@ function Notice({
           to="/"
           className="mt-10 text-xs font-semibold text-muted-foreground hover:text-foreground"
         >
-          Made with SlagBio
+          Made with SlugBio
         </Link>
       </div>
     );
@@ -99,7 +99,7 @@ function Notice({
         )}
       </div>
       <Link to="/" className="pb-6 text-xs" style={{ color: t.muted }}>
-        Made with SlagBio
+        Made with SlugBio
       </Link>
     </div>
   );
@@ -178,7 +178,7 @@ function PublicCampaign() {
         />
         <div className="pt-4 pb-6 text-center text-[11px]" style={{ color: campaign.theme.muted }}>
           <Link to="/" className="hover:underline">
-            Made with SlagBio
+            Made with SlugBio
           </Link>
         </div>
       </div>

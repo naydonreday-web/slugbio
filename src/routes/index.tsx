@@ -14,10 +14,10 @@ import { useAuthGuard } from "@/lib/supabase/use-auth";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Overview — SlagBio" },
-      { name: "description", content: "Your SlagBio campaigns at a glance: drafts, live posters, views and responses." },
-      { property: "og:title", content: "Overview — SlagBio" },
-      { property: "og:description", content: "Your SlagBio campaigns at a glance: drafts, live posters, views and responses." },
+      { title: "Overview — SlugBio" },
+      { name: "description", content: "Your SlugBio campaigns at a glance: drafts, live posters, views and responses." },
+      { property: "og:title", content: "Overview — SlugBio" },
+      { property: "og:description", content: "Your SlugBio campaigns at a glance: drafts, live posters, views and responses." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -171,7 +171,7 @@ function Dashboard() {
             </div>
             <div className="glass rounded-[10px] p-5">
               <div className="flex items-center gap-2 text-label-caps text-muted-foreground uppercase"><Inbox className="h-4 w-4" /> Past responses</div>
-              {ready && recent.length === 0 && <p className="mt-4 text-sm text-muted-foreground">Historical SlagBio submissions remain here for reference.</p>}
+              {ready && recent.length === 0 && <p className="mt-4 text-sm text-muted-foreground">Historical SlugBio submissions remain here for reference.</p>}
               <ul className="mt-3 flex flex-col">
                 {recent.map(({ c, r }) => {
                   const first = Object.values(r.values).find(Boolean) ?? "Anonymous";

@@ -19,7 +19,7 @@ export function getSupabaseBrowserClient(): SupabaseClient<Database> {
   const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
   if (!url || !key)
     throw new Error(
-      "Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY to connect SlagBio to Supabase.",
+      "Set VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY to connect SlugBio to Supabase.",
     );
 
   client = createBrowserClient<Database>(url, key, {

@@ -12,9 +12,9 @@ import { useAuthGuard } from "@/lib/supabase/use-auth";
 export const Route = createFileRoute("/preview/$id")({
   head: () => ({
     meta: [
-      { title: "Preview — SlagBio" },
+      { title: "Preview — SlugBio" },
       { name: "description", content: "Test your campaign poster's buttons and forms before publishing." },
-      { property: "og:title", content: "Preview — SlagBio" },
+      { property: "og:title", content: "Preview — SlugBio" },
       { property: "og:description", content: "Test your campaign poster's buttons and forms before publishing." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

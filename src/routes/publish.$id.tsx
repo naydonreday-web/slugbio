@@ -16,12 +16,12 @@ import { isCampaignSlugAvailable } from "@/lib/supabase/data";
 export const Route = createFileRoute("/publish/$id")({
   head: () => ({
     meta: [
-      { title: "Publish campaign — SlagBio" },
+      { title: "Publish campaign — SlugBio" },
       {
         name: "description",
         content: "Choose a link, duration and privacy, then publish your campaign.",
       },
-      { property: "og:title", content: "Publish campaign — SlagBio" },
+      { property: "og:title", content: "Publish campaign — SlugBio" },
       {
         property: "og:description",
         content: "Choose a link, duration and privacy, then publish your campaign.",

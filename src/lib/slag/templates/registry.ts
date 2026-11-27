@@ -4,7 +4,7 @@ import type { Block, BlockStyle, BlockType } from "../types";
 import { styleRegistrySnapshot, variantNames } from "./styles";
 
 /**
- * The authoritative list of SlagBio campaign blocks. Templates may only style these types —
+ * The authoritative list of SlugBio campaign blocks. Templates may only style these types —
  * a template (or Wiby) can never introduce a new block type.
  */
 export const BLOCK_TYPES = ["hero", "text", "image", "offer", "details", "cta", "form", "social", "footer"] as const satisfies readonly BlockType[];
@@ -93,7 +93,7 @@ export const BLOCK_REGISTRY: Record<BlockType, BlockDefinition> = {
     variants: ["default"],
     rendering: { position: "any", maxPerPoster: 1 },
     responsive: "Single Google Forms button that opens the campaign owner's responder link.",
-    ai: "Link to Google Forms for registration or enquiries; never collect responses in SlagBio.",
+    ai: "Link to Google Forms for registration or enquiries; never collect responses in SlugBio.",
   },
   social: {
     type: "social", ...BLOCK_META.social,

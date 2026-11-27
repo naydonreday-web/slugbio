@@ -36,7 +36,7 @@ const answers = {
 beforeEach(() => resetTemplateStore());
 
 describe("block registry", () => {
-  it("covers exactly the nine SlagBio blocks", () => {
+  it("covers exactly the nine SlugBio blocks", () => {
     expect([...BLOCK_TYPES].sort()).toEqual([
       "cta",
       "details",

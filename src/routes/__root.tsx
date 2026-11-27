@@ -82,14 +82,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "SlagBio — AI campaign posters you can share as a link" },
+      { title: "SlugBio — AI campaign posters you can share as a link" },
       {
         name: "description",
         content:
           "Answer a few questions, get a beautiful interactive poster, edit it with AI and publish it as a shareable link.",
       },
-      { name: "author", content: "SlagBio" },
-      { property: "og:title", content: "SlagBio — AI campaign posters you can share as a link" },
+      { name: "author", content: "SlugBio" },
+      { property: "og:title", content: "SlugBio — AI campaign posters you can share as a link" },
       {
         property: "og:description",
         content:
@@ -106,7 +106,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,700;1,800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&display=swap",
       },
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.ico?v=20261127", type: "image/x-icon" },
     ],
   }),
   shellComponent: RootShell,
