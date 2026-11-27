@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, Loader2, LockKeyhole, Mail, Sparkles } from "lucide-react";
 import { Logo } from "@/components/slag/Logo";
@@ -31,15 +31,19 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const captchaTokenRef = useRef<string | null>(null);
   const [captchaReset, setCaptchaReset] = useState(0);
   const configured = isSupabaseConfigured();
   const captchaSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+  const handleCaptchaToken = (token: string | null) => {
+    captchaTokenRef.current = token;
+  };
 
   const submit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!configured || busy) return;
-    if (captchaSiteKey && mode !== "update" && !captchaToken) {
+    const token = captchaTokenRef.current;
+    if (captchaSiteKey && mode !== "update" && !token) {
       setMessage("Complete the security check before continuing.");
       return;
     }
@@ -51,14 +55,14 @@ function LoginPage() {
         const { error } = await auth.signInWithPassword({
           email: email.trim(),
           password,
-          ...(captchaToken ? { captchaToken } : {}),
+          ...(token ? { options: { captchaToken: token } } : {}),
         });
         if (error) throw error;
         await navigate({ to: "/" });
       } else if (mode === "reset") {
         const { error } = await auth.resetPasswordForEmail(email.trim(), {
           redirectTo: `${window.location.origin}/login?action=update-password`,
-          ...(captchaToken ? { captchaToken } : {}),
+          ...(token ? { captchaToken: token } : {}),
         });
         if (error) throw error;
         setMessage("If an account uses that email, we’ve sent a password reset link.");
@@ -72,7 +76,7 @@ function LoginPage() {
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/`,
-            ...(captchaToken ? { captchaToken } : {}),
+            ...(token ? { captchaToken: token } : {}),
           },
         });
         if (error) throw error;
@@ -86,7 +90,7 @@ function LoginPage() {
     } finally {
       setBusy(false);
       if (captchaSiteKey && mode !== "update") {
-        setCaptchaToken(null);
+        captchaTokenRef.current = null;
         setCaptchaReset((key) => key + 1);
       }
     }
@@ -171,7 +175,7 @@ function LoginPage() {
                 </label>
               )}
               {captchaSiteKey && mode !== "update" && (
-                <Turnstile key={captchaReset} siteKey={captchaSiteKey} onToken={setCaptchaToken} />
+                <Turnstile key={captchaReset} siteKey={captchaSiteKey} onToken={handleCaptchaToken} />
               )}
               {message && (
                 <p
