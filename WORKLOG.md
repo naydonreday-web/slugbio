@@ -9,9 +9,10 @@ Use this file for durable decisions, current work, and handoff notes. Keep entri
 - The repository was clean on `main` at commit `d294a3d` (`Replace SlagBio branding with SlugBio`) when this worklog was created.
 - Implemented the six queued pre-launch review items in `roadmap.md`: publishing slug validation/persistence, public template access, studio autosave flush, public route slug transitions, poster style treatments, and branding/config cleanup. The fallback share domain is `slug.bio` per user direction.
 - Starter form blocks still require the creator's own Google Forms responder URL by design; publishing validates that value. The unused `public/favicon1.ico` was removed.
-- The work remains local and uncommitted. Prettier formatting was applied to the edited renderer, store, data, and route files; application tests and builds were not run.
-- Current security fix is implemented locally: remove the anon-readable `public_campaigns` view and serve published campaign posters through the IP-rate-limited `campaign-public` Edge Function. The migration and function are not deployed; apply them alongside a frontend release that includes the updated client, since the currently deployed frontend still queries the view.
-- **Next step:** Review the local diff and run the project's requested checks before deciding whether to commit.
+- The six pre-launch fixes were committed in `d3fe52a` and pushed to `main`.
+- The security fix was committed and pushed in `5d9f1e0`. The `campaign-public` Edge Function was deployed from the Supabase dashboard, the Cloudflare Worker was deployed as version `e2528444-e419-4ee0-b0c2-87b1731b02d8`, and `public.public_campaigns` was dropped through the Supabase SQL Editor after the frontend release.
+- `pnpm deploy` completed successfully, including the production build. `git diff --check` passed before release. The project test suite and lint were not run.
+- **Next step:** Monitor public campaign links and confirm the Supabase Security Advisor no longer reports `public.public_campaigns`.
 
 ## Ongoing decisions
 
