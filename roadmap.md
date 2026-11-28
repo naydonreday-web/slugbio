@@ -25,3 +25,12 @@
 - [x] Deploy `campaign-public` and smoke-check its invalid-campaign response
 - [x] Set the privacy notice operator and contact email in the local build environment
 - [ ] Production launch gates: deploy to the assigned `workers.dev` hostname, configure SMTP/Auth redirects, and enable breached-password protection
+
+## Queued fixes
+
+- [x] Publishing slug check & persistence: use an owner-validated `SECURITY DEFINER` RPC for global slug availability, await the cloud save before opening the share dialog, and show a clear conflict message if another account claims the slug during publishing.
+- [x] Public pending Wiby templates: allow `/c/$slug` visitors to read a template version referenced by any published campaign, including link-only campaigns with `visibility = 'private'`.
+- [x] Studio auto-save: skip the initial unchanged document and flush a pending debounced edit on unmount/navigation.
+- [x] Public route slug transitions: avoid showing stale remote campaigns while a new slug loads and track views once per campaign.
+- [x] PosterRenderer visual styles: fix polaroid caption contrast and image selection rings; complete collage, burst, sticker, calendar, and location treatments.
+- [x] Cleanup & branding: update the public URL fallback to `slug.bio`, guard malformed `VITE_PUBLIC_SITE_URL`, and remove unused `public/favicon1.ico`. Starter form blocks intentionally omit creator-specific Google Forms responder URLs; the editor asks creators to provide one and publishing validates it, so no fake URL is seeded.

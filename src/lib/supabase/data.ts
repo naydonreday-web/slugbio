@@ -181,7 +181,10 @@ export async function saveProfile(userId: string, profile: Profile): Promise<voi
   if (error) throw error;
 }
 
-export async function deleteCampaignResponse(campaignId: string, responseId: string): Promise<void> {
+export async function deleteCampaignResponse(
+  campaignId: string,
+  responseId: string,
+): Promise<void> {
   const { data, error } = await getSupabaseBrowserClient()
     .from("campaign_responses")
     .delete()
@@ -213,12 +216,10 @@ export async function loadPublicCampaign(slug: string): Promise<Campaign | undef
 }
 
 export async function isCampaignSlugAvailable(slug: string, campaignId: string): Promise<boolean> {
-  const { data, error } = await getSupabaseBrowserClient()
-    .from("campaigns")
-    .select("id")
-    .eq("slug", slug)
-    .neq("id", campaignId)
-    .maybeSingle();
+  const { data, error } = await getSupabaseBrowserClient().rpc("is_campaign_slug_available", {
+    p_slug: slug,
+    p_campaign_id: campaignId,
+  });
   if (error) throw error;
-  return !data;
+  return data === true;
 }

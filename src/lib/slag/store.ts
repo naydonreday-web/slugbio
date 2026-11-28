@@ -139,12 +139,12 @@ function syncCloud(previous: Campaign[], next: Campaign[]) {
   }
 }
 
-function set(fn: (s: StoreState) => StoreState) {
+function set(fn: (s: StoreState) => StoreState, sync = true) {
   ensureLoaded();
   const previousCampaigns = state.campaigns;
   state = fn(state);
   persist();
-  syncCloud(previousCampaigns, state.campaigns);
+  if (sync) syncCloud(previousCampaigns, state.campaigns);
   emit();
 }
 
@@ -277,7 +277,7 @@ export function duplicateCampaign(id: string): Campaign | undefined {
   return addCampaign(copy);
 }
 
-export function publishCampaign(
+export async function publishCampaign(
   id: string,
   opts: {
     slug: string;
@@ -287,40 +287,61 @@ export function publishCampaign(
     payment?: Omit<Payment, "id" | "paidAt" | "durationDays">;
   },
 ) {
-  updateCampaign(id, (c) => {
-    // Renewal of a still-running campaign extends from its current expiry.
-    const status = deriveStatus(c);
-    const start =
-      status === "active" &&
-      c.expiresAt &&
-      opts.startsAt.getTime() < new Date(c.expiresAt).getTime()
-        ? new Date(c.startsAt!)
-        : opts.startsAt;
-    const end =
-      status === "active" && c.expiresAt
-        ? expiryFrom(new Date(c.expiresAt), opts.days)
-        : expiryFrom(opts.startsAt, opts.days);
-    return {
-      ...c,
-      slug: opts.slug,
-      status: "published",
-      visibility: opts.visibility,
-      startsAt: start.toISOString(),
-      expiresAt: end.toISOString(),
-      durationDays: opts.days,
-      payments: opts.payment
-        ? [
-            ...c.payments,
-            {
-              ...opts.payment,
-              id: uid("pay"),
-              paidAt: new Date().toISOString(),
-              durationDays: opts.days,
-            },
-          ]
-        : c.payments,
-    };
-  });
+  const current = getCampaign(id);
+  if (!current) throw new Error("Campaign not found.");
+
+  // Renewal of a still-running campaign extends from its current expiry.
+  const status = deriveStatus(current);
+  const start =
+    status === "active" &&
+    current.expiresAt &&
+    opts.startsAt.getTime() < new Date(current.expiresAt).getTime()
+      ? new Date(current.startsAt!)
+      : opts.startsAt;
+  const end =
+    status === "active" && current.expiresAt
+      ? expiryFrom(new Date(current.expiresAt), opts.days)
+      : expiryFrom(opts.startsAt, opts.days);
+  const updated: Campaign = {
+    ...current,
+    slug: opts.slug,
+    status: "published",
+    visibility: opts.visibility,
+    startsAt: start.toISOString(),
+    expiresAt: end.toISOString(),
+    durationDays: opts.days,
+    payments: opts.payment
+      ? [
+          ...current.payments,
+          {
+            ...opts.payment,
+            id: uid("pay"),
+            paidAt: new Date().toISOString(),
+            durationDays: opts.days,
+          },
+        ]
+      : current.payments,
+    updatedAt: new Date().toISOString(),
+  };
+
+  // Save remotely before making the share dialog available. The unique slug
+  // constraint remains the final guard against concurrent claims.
+  let publishingUserId: string | null = null;
+  if (isSupabaseConfigured()) {
+    if (!currentUserId) throw new Error("Sign in before publishing this campaign.");
+    publishingUserId = currentUserId;
+    await saveCloudCampaign(publishingUserId, updated);
+    if (currentUserId !== publishingUserId)
+      throw new Error("The signed-in account changed while publishing.");
+  }
+
+  set(
+    (s) => ({
+      ...s,
+      campaigns: s.campaigns.map((campaign) => (campaign.id === id ? updated : campaign)),
+    }),
+    false,
+  );
 }
 
 export function archiveCampaign(id: string, archived: boolean) {
@@ -354,7 +375,10 @@ export function removeResponseLocal(campaignId: string, responseId: string) {
     ...state,
     campaigns: state.campaigns.map((campaign) =>
       campaign.id === campaignId
-        ? { ...campaign, responses: campaign.responses.filter((response) => response.id !== responseId) }
+        ? {
+            ...campaign,
+            responses: campaign.responses.filter((response) => response.id !== responseId),
+          }
         : campaign,
     ),
   };

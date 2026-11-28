@@ -40,7 +40,12 @@ function Publish() {
   const [slug, setSlug] = useState<string | null>(null);
   const [publicHost, setPublicHost] = useState(() => {
     const configuredUrl = import.meta.env.VITE_PUBLIC_SITE_URL;
-    return configuredUrl ? new URL(configuredUrl).host : PUBLIC_HOST;
+    if (!configuredUrl) return PUBLIC_HOST;
+    try {
+      return new URL(configuredUrl).host || PUBLIC_HOST;
+    } catch {
+      return PUBLIC_HOST;
+    }
   });
   const [days, setDays] = useState(14);
   const [publishing, setPublishing] = useState(false);
@@ -90,9 +95,18 @@ function Publish() {
         setError("That link was just claimed. Choose another link and try again.");
         return;
       }
-      publishCampaign(campaign.id, { slug: s, startsAt: start, days, visibility: "private" });
+      await publishCampaign(campaign.id, { slug: s, startsAt: start, days, visibility: "private" });
       setDone(true);
-    } catch {
+    } catch (publishError) {
+      if (
+        typeof publishError === "object" &&
+        publishError !== null &&
+        "code" in publishError &&
+        publishError.code === "23505"
+      ) {
+        setError("That link was just claimed. Choose another link and try again.");
+        return;
+      }
       setError("We couldn't publish your campaign. Check your connection and try again.");
     } finally {
       setPublishing(false);
@@ -150,7 +164,10 @@ function Publish() {
               </div>
             </div>
             {formError && (
-              <p role="alert" className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
+              <p
+                role="alert"
+                className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm"
+              >
                 {formError}{" "}
                 <Link to="/studio/$id" params={{ id }} className="font-semibold underline">
                   Open editor

@@ -109,28 +109,33 @@ function PublicCampaign() {
   const { slug } = Route.useParams();
   const { state } = Route.useSearch();
   const local = useCampaignBySlug(slug);
-  const [remote, setRemote] = useState<{ ready: boolean; campaign?: Campaign }>({ ready: false });
+  const [remote, setRemote] = useState<{
+    slug: string;
+    ready: boolean;
+    campaign?: Campaign;
+  }>({ slug, ready: false });
   const configured = isSupabaseConfigured();
   useEffect(() => {
     if (!configured) return;
     let live = true;
     void loadPublicCampaign(slug)
       .then((campaign) => {
-        if (live) setRemote({ ready: true, campaign });
+        if (live) setRemote({ slug, ready: true, campaign });
       })
       .catch(() => {
-        if (live) setRemote({ ready: true });
+        if (live) setRemote({ slug, ready: true });
       });
     return () => {
       live = false;
     };
   }, [configured, slug]);
-  const { ready, campaign } = configured ? remote : local;
-  const counted = useRef(false);
+  const currentRemote = remote.slug === slug ? remote : { slug, ready: false, campaign: undefined };
+  const { ready, campaign } = configured ? currentRemote : local;
+  const counted = useRef<string | null>(null);
   const status = campaign ? deriveStatus(campaign) : null;
   useEffect(() => {
-    if (!campaign || status !== "active" || counted.current) return;
-    counted.current = true;
+    if (!campaign || status !== "active" || counted.current === campaign.id) return;
+    counted.current = campaign.id;
     const k = `slagbio:viewed:${slug}`;
     if (!sessionStorage.getItem(k)) {
       sessionStorage.setItem(k, "1");

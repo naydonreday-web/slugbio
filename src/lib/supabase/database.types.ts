@@ -316,6 +316,14 @@ export type Database = {
       }
     }
     Functions: {
+      is_campaign_slug_available: {
+        Args: { p_campaign_id: string; p_slug: string }
+        Returns: boolean
+      }
+      is_template_version_referenced_by_published_campaign: {
+        Args: { p_template_id: string; p_version: string }
+        Returns: boolean
+      }
       review_template: {
         Args: {
           p_decision: string

@@ -115,7 +115,7 @@ export function PosterRenderer({
   const templateId = campaign.template?.id;
   const templateVersion = campaign.template?.version;
   const [publicOrigin, setPublicOrigin] = useState(
-    () => import.meta.env.VITE_PUBLIC_SITE_URL ?? "https://slag.bio",
+    () => import.meta.env.VITE_PUBLIC_SITE_URL ?? "https://slug.bio",
   );
   useEffect(() => setPublicOrigin(window.location.origin), []);
   useEffect(() => {
@@ -668,6 +668,12 @@ function BlockBody({
               {gradient && (
                 <div className="absolute inset-5 rounded-[min(var(--p-radius),32px)] border border-white/30 shadow-2xl" />
               )}
+              {onPickEl && selectedEl === "image" && (
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 z-[15] ring-[3px] ring-primary ring-inset"
+                />
+              )}
             </div>
           </div>
         );
@@ -708,6 +714,13 @@ function BlockBody({
             >
               <img src={img} alt="" className="h-full w-full scale-150 object-cover object-right" />
             </div>
+          )}
+          {heroStyle === "hero.collage" && (
+            <div
+              aria-hidden
+              className="pointer-events-none absolute top-8 left-6 z-[2] h-16 w-20 -rotate-6 border-4 border-[var(--p-bg)] shadow-xl @2xl:left-12"
+              style={{ background: "var(--p-accent)" }}
+            />
           )}
           <div className="absolute inset-0" style={{ background: heroScrim }} />
           <div
@@ -877,7 +890,12 @@ function BlockBody({
             <EditableText
               as="figcaption"
               {...T("caption", {
-                color: imageStyle === "image.text-overlay" ? "#ffffff" : "var(--p-muted)",
+                color:
+                  imageStyle === "image.text-overlay"
+                    ? "#ffffff"
+                    : imageStyle === "image.polaroid"
+                      ? "#18181b"
+                      : "var(--p-muted)",
                 textAlign: align,
               })}
               placeholder="Add a caption"
@@ -891,7 +909,28 @@ function BlockBody({
         </figure>
       );
     }
-    case "offer":
+    case "offer": {
+      const isBurst = L.styles.offer === "offer.burst";
+      const isSticker = L.styles.offer === "offer.sticker";
+      const priceStyle = {
+        ...H(
+          L.styles.offer === "offer.luxury"
+            ? "clamp(42px, 14cqi, 82px)"
+            : "clamp(40px, 13cqi, 76px)",
+        ),
+        color: isSticker ? "var(--p-accent-text)" : "var(--p-accent-display)",
+        filter: "saturate(1.1)",
+        fontFamily: L.styles.offer === "offer.luxury" ? "var(--p-display)" : undefined,
+      };
+      const originalPrice = (className = "text-xl opacity-60") =>
+        (c.originalPrice || editing) && (
+          <EditableText
+            {...T("originalPrice", { textDecorationLine: "line-through" })}
+            placeholder="Was"
+            className={className}
+          />
+        );
+      const price = () => <EditableText {...T("price", priceStyle)} placeholder="Price" />;
       return (
         <div className="px-6 @2xl:px-14" style={pad}>
           <div
@@ -900,7 +939,7 @@ function BlockBody({
               alignCls,
               L.styles.offer === "offer.gradient" &&
                 "bg-gradient-to-br from-[var(--p-accent)]/20 via-[var(--p-surface)] to-transparent",
-              L.styles.offer === "offer.sticker" && "rotate-[-1deg] shadow-xl",
+              isSticker && "relative shadow-xl",
               L.styles.offer === "offer.burst" &&
                 "ring-2 ring-[var(--p-accent)] ring-offset-4 ring-offset-[var(--p-bg)]",
               L.styles.offer === "offer.ticket" &&
@@ -934,27 +973,39 @@ function BlockBody({
               className={cn(
                 "flex flex-wrap items-baseline gap-3",
                 align === "center" && "justify-center",
+                (isBurst || isSticker) && "items-center",
+                isSticker && "@2xl:pr-32",
               )}
             >
-              <EditableText
-                {...T("price", {
-                  ...H(
-                    L.styles.offer === "offer.luxury"
-                      ? "clamp(42px, 14cqi, 82px)"
-                      : "clamp(40px, 13cqi, 76px)",
-                  ),
-                  color: "var(--p-accent-display)",
-                  filter: "saturate(1.1)",
-                  fontFamily: L.styles.offer === "offer.luxury" ? "var(--p-display)" : undefined,
-                })}
-                placeholder="Price"
-              />
-              {(c.originalPrice || editing) && (
-                <EditableText
-                  {...T("originalPrice", { textDecorationLine: "line-through" })}
-                  placeholder="Was"
-                  className="text-xl opacity-60"
-                />
+              {isSticker ? (
+                <div
+                  className="relative z-10 flex min-h-32 min-w-32 rotate-6 flex-col items-center justify-center rounded-full px-5 py-4 text-center shadow-lg ring-4 ring-[var(--p-bg)] @2xl:absolute @2xl:top-[-1.25rem] @2xl:right-[-1.25rem]"
+                  style={{ background: "var(--p-accent)", color: "var(--p-accent-text)" }}
+                >
+                  {price()}
+                  {originalPrice("text-sm opacity-75")}
+                </div>
+              ) : (
+                <>
+                  {price()}
+                  {originalPrice()}
+                </>
+              )}
+              {isBurst && (
+                <div
+                  role="img"
+                  aria-label="Special offer"
+                  className="flex h-20 w-20 shrink-0 -rotate-6 flex-col items-center justify-center text-center text-[10px] font-black leading-tight tracking-wider"
+                  style={{
+                    background: "var(--p-accent)",
+                    color: "var(--p-accent-text)",
+                    clipPath:
+                      "polygon(50% 0%,61% 10%,75% 3%,80% 17%,93% 25%,90% 40%,100% 50%,90% 60%,93% 75%,80% 83%,75% 97%,61% 90%,50% 100%,39% 90%,25% 97%,20% 83%,7% 75%,10% 60%,0% 50%,10% 40%,7% 25%,20% 17%,25% 3%,39% 10%)",
+                  }}
+                >
+                  <span>SPECIAL</span>
+                  <span>OFFER</span>
+                </div>
               )}
             </div>
             <EditableText
@@ -968,8 +1019,16 @@ function BlockBody({
           </div>
         </div>
       );
+    }
     case "details": {
       const detailStyle = L.styles.details;
+      const detailItems = c.items ?? [];
+      const orderedDetailItems =
+        detailStyle === "details.location"
+          ? [...detailItems].sort(
+              (a, b) => Number(b.icon === "location") - Number(a.icon === "location"),
+            )
+          : detailItems;
       return (
         <div
           className="mx-auto px-6 @2xl:px-14"
@@ -1040,9 +1099,18 @@ function BlockBody({
                 detailStyle === "details.columns" &&
                   "@2xl:[grid-template-columns:repeat(2,minmax(0,1fr))]",
               )}
+              style={
+                detailStyle === "details.location"
+                  ? ({ "--p-dcols": "minmax(0, 1.2fr) minmax(0, 1fr)" } as CSSProperties)
+                  : undefined
+              }
             >
-              {(c.items ?? []).map((it, index) => {
+              {orderedDetailItems.map((it, index) => {
                 const Icon = DETAIL_ICONS[it.icon] ?? Info;
+                const calendarDate =
+                  detailStyle === "details.calendar" && it.icon === "date"
+                    ? parseEndsAt(it.value)
+                    : null;
                 return (
                   <div
                     key={it.id}
@@ -1057,12 +1125,22 @@ function BlockBody({
                         "bg-[color-mix(in_oklab,var(--p-accent)_12%,transparent)]",
                       detailStyle === "details.calendar" &&
                         it.icon === "date" &&
-                        "flex-col items-start gap-2",
+                        "relative flex-col items-start gap-2 overflow-hidden border-t-4 border-[var(--p-accent)] text-left",
+                      detailStyle === "details.location" &&
+                        it.icon === "location" &&
+                        "relative min-h-44 flex-col items-start overflow-hidden @2xl:row-span-2 @2xl:min-h-full",
                     )}
                     style={
                       detailStyle === "details.grid" || detailStyle === "details.columns"
                         ? { background: "transparent", borderRadius: 0 }
-                        : surfaceStyle(L, 20)
+                        : detailStyle === "details.location" && it.icon === "location"
+                          ? {
+                              ...surfaceStyle(L, 20),
+                              backgroundImage:
+                                "linear-gradient(32deg, transparent 46%, color-mix(in oklab,var(--p-accent) 18%,transparent) 47% 50%, transparent 51%), linear-gradient(90deg, color-mix(in oklab,var(--p-text) 7%,transparent) 1px, transparent 1px), linear-gradient(color-mix(in oklab,var(--p-text) 7%,transparent) 1px, transparent 1px)",
+                              backgroundSize: "100% 100%, 28px 28px, 28px 28px",
+                            }
+                          : surfaceStyle(L, 20)
                     }
                   >
                     {detailStyle === "details.grid" && (
@@ -1077,10 +1155,23 @@ function BlockBody({
                           detailStyle === "details.calendar" &&
                             it.icon === "date" &&
                             "h-16 w-16 rounded-xl",
+                          detailStyle === "details.location" &&
+                            it.icon === "location" &&
+                            "h-14 w-14 rounded-2xl shadow-md",
                         )}
-                        style={{ background: "var(--p-accent)", color: "var(--p-accent-text)" }}
+                        style={{
+                          background: "var(--p-accent)",
+                          color: "var(--p-accent-text)",
+                        }}
                       >
-                        <Icon className="h-5 w-5" />
+                        <Icon
+                          className={cn(
+                            "h-5 w-5",
+                            detailStyle === "details.location" &&
+                              it.icon === "location" &&
+                              "h-7 w-7",
+                          )}
+                        />
                       </span>
                     )}
                     <div className="min-w-0">
@@ -1090,7 +1181,47 @@ function BlockBody({
                       >
                         {it.label}
                       </div>
-                      <div className="text-[16px] font-semibold">{it.value}</div>
+                      {calendarDate ? (
+                        <>
+                          <div className="mt-1 flex flex-wrap items-baseline gap-x-2">
+                            <span className="text-4xl font-black leading-none tracking-tight @2xl:text-5xl">
+                              {calendarDate.getDate()}
+                            </span>
+                            <span className="text-lg font-bold">
+                              {calendarDate.toLocaleDateString(undefined, { month: "long" })}
+                            </span>
+                            <span
+                              className="text-sm font-semibold"
+                              style={{ color: "var(--p-muted)" }}
+                            >
+                              {calendarDate.getFullYear()}
+                            </span>
+                          </div>
+                          <div className="mt-1 text-sm font-medium">{it.value}</div>
+                        </>
+                      ) : (
+                        <div className="text-[16px] font-semibold">{it.value}</div>
+                      )}
+                      {detailStyle === "details.location" &&
+                        it.icon === "location" &&
+                        (mode === "edit" ? (
+                          <span
+                            className="mt-2 inline-flex items-center gap-1 text-xs font-bold"
+                            style={{ color: "var(--p-accent-ink)" }}
+                          >
+                            Get directions <ArrowUpRight className="h-3.5 w-3.5" />
+                          </span>
+                        ) : (
+                          <a
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(it.value)}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="mt-2 inline-flex items-center gap-1 text-xs font-bold underline underline-offset-4"
+                            style={{ color: "var(--p-accent-ink)" }}
+                          >
+                            Get directions <ArrowUpRight className="h-3.5 w-3.5" />
+                          </a>
+                        ))}
                     </div>
                   </div>
                 );
@@ -1386,7 +1517,8 @@ function FormBlock({
   const responderUrl = safeGoogleFormUrl(c.googleFormUrl);
   const T = (k: ElementKey, style?: CSSProperties) =>
     textProps(b, k, editing, onEdit, selectedEl, onPickEl, style);
-  const buttonClass = "mt-2 inline-flex min-h-13 w-full items-center justify-center gap-2 px-6 py-3.5 text-[16px] font-bold";
+  const buttonClass =
+    "mt-2 inline-flex min-h-13 w-full items-center justify-center gap-2 px-6 py-3.5 text-[16px] font-bold";
   const buttonStyle = {
     background: "var(--p-accent)",
     color: "var(--p-accent-text)",
@@ -1419,7 +1551,13 @@ function FormBlock({
         />
       )}
       {responderUrl && mode !== "edit" && mode !== "thumb" ? (
-        <a href={responderUrl} target="_blank" rel="noopener noreferrer" className={buttonClass} style={buttonStyle}>
+        <a
+          href={responderUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={buttonClass}
+          style={buttonStyle}
+        >
           {c.submitLabel || "Open Google Form"}
           <ExternalLink className="h-4 w-4" aria-hidden="true" />
         </a>
@@ -1438,9 +1576,15 @@ function FormBlock({
           <ExternalLink className="h-4 w-4" aria-hidden="true" />
         </button>
       ) : mode === "thumb" ? (
-        <span className={buttonClass} style={buttonStyle}>{c.submitLabel || "Open Google Form"}</span>
+        <span className={buttonClass} style={buttonStyle}>
+          {c.submitLabel || "Open Google Form"}
+        </span>
       ) : (
-        <p role="status" className="mt-3 rounded-xl border border-glass-border bg-glass p-3 text-sm" style={{ color: "var(--p-muted)" }}>
+        <p
+          role="status"
+          className="mt-3 rounded-xl border border-glass-border bg-glass p-3 text-sm"
+          style={{ color: "var(--p-muted)" }}
+        >
           Add a Google Forms responder link in the editor before publishing this campaign.
         </p>
       )}

@@ -9,7 +9,7 @@ export const DURATIONS = [
 
 export const VAT_RATE = 0.15;
 export const CURRENCY = "M";
-export const PUBLIC_HOST = "slag.bio";
+export const PUBLIC_HOST = "slug.bio";
 
 export function formatMoney(n: number): string {
   return `${CURRENCY}${n.toFixed(2)}`;

@@ -203,7 +203,7 @@ export function styleContext(blocks: Block[], slug?: string, publicOrigin?: stri
       if (it.icon === "location") add("location", it.value, it.id);
     }
   }
-  const origin = publicOrigin ?? import.meta.env.VITE_PUBLIC_SITE_URL ?? "https://slag.bio";
+  const origin = publicOrigin ?? import.meta.env.VITE_PUBLIC_SITE_URL ?? "https://slug.bio";
   return { links, contacts, url: `${origin.replace(/\/$/, "")}/c/${slug || "your-campaign"}` };
 }
 

@@ -43,6 +43,9 @@ function Studio() {
 
 function Editor({ initial }: { initial: Campaign }) {
   const [doc, setDoc] = useState(initial);
+  const lastSavedDoc = useRef(initial);
+  const latestDoc = useRef(doc);
+  const pendingSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [past, setPast] = useState<Campaign[]>([]);
   const [future, setFuture] = useState<Campaign[]>([]);
   const [sel, setSelBlock] = useState<string | null>(null);
@@ -58,11 +61,37 @@ function Editor({ initial }: { initial: Campaign }) {
   const [aiFocus, setAiFocus] = useState(0);
   const lastKey = useRef<{ k: string; t: number } | null>(null);
 
+  latestDoc.current = doc;
+
   useEffect(() => {
+    if (doc === lastSavedDoc.current) {
+      setSaved(true);
+      return;
+    }
     setSaved(false);
-    const t = setTimeout(() => { replaceCampaign(doc); setSaved(true); }, 500);
+    const t = setTimeout(() => {
+      pendingSaveTimer.current = null;
+      lastSavedDoc.current = doc;
+      replaceCampaign(doc);
+      setSaved(true);
+    }, 500);
+    pendingSaveTimer.current = t;
     return () => clearTimeout(t);
   }, [doc]);
+
+  useEffect(
+    () => () => {
+      if (pendingSaveTimer.current !== null) {
+        clearTimeout(pendingSaveTimer.current);
+        pendingSaveTimer.current = null;
+        if (latestDoc.current !== lastSavedDoc.current) {
+          lastSavedDoc.current = latestDoc.current;
+          replaceCampaign(latestDoc.current);
+        }
+      }
+    },
+    [],
+  );
 
   const apply = (next: Campaign, key?: string) => {
     const now = Date.now();
