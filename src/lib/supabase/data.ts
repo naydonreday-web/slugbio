@@ -13,7 +13,21 @@ import type {
 import type { Profile } from "@/lib/slag/profile";
 
 type CampaignRow = Tables<"campaigns">;
-type PublicCampaignRow = Tables<"public_campaigns">;
+type PublicCampaignRow = Pick<
+  CampaignRow,
+  | "id"
+  | "slug"
+  | "title"
+  | "purpose"
+  | "status"
+  | "theme"
+  | "template"
+  | "blocks"
+  | "starts_at"
+  | "expires_at"
+  | "expired_message"
+  | "expired_contact"
+>;
 
 function asJson<T>(value: T): CampaignRow["theme"] {
   return value as CampaignRow["theme"];
@@ -206,13 +220,11 @@ export async function trackCampaignMetric(
 }
 
 export async function loadPublicCampaign(slug: string): Promise<Campaign | undefined> {
-  const { data, error } = await getSupabaseBrowserClient()
-    .from("public_campaigns")
-    .select("*")
-    .eq("slug", slug)
-    .maybeSingle();
+  const { data, error } = await getSupabaseBrowserClient().functions.invoke("campaign-public", {
+    body: { action: "load", slug },
+  });
   if (error) throw error;
-  return data ? campaignFromPublicRow(data) : undefined;
+  return data ? campaignFromPublicRow(data as PublicCampaignRow) : undefined;
 }
 
 export async function isCampaignSlugAvailable(slug: string, campaignId: string): Promise<boolean> {

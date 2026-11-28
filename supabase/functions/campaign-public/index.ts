@@ -8,7 +8,9 @@ const corsHeaders = {
   "Cache-Control": "no-store",
 };
 
-type CampaignAction = { action: "track"; campaignId: string; metric: "view" | "click" | "share" };
+type CampaignAction =
+  | { action: "track"; campaignId: string; metric: "view" | "click" | "share" }
+  | { action: "load"; slug: string };
 
 function json(body: Record<string, unknown>, status: number) {
   return new Response(JSON.stringify(body), {
@@ -38,6 +40,13 @@ function requestIp(request: Request) {
 function isAction(value: unknown): value is CampaignAction {
   if (!value || typeof value !== "object") return false;
   const action = value as Record<string, unknown>;
+  if (action.action === "load")
+    return (
+      typeof action.slug === "string" &&
+      action.slug.length >= 3 &&
+      action.slug.length <= 48 &&
+      /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(action.slug)
+    );
   if (typeof action.campaignId !== "string" || action.campaignId.length < 3 || action.campaignId.length > 80)
     return false;
   return action.action === "track" &&
@@ -76,7 +85,11 @@ Deno.serve(async (request) => {
     auth: { autoRefreshToken: false, persistSession: false },
   });
   const rateSecret = Deno.env.get("RATE_LIMIT_SECRET") || secretKey;
-  const rateKey = await hashRateKey(ip, "metric", rateSecret);
+  const rateKey = await hashRateKey(
+    ip,
+    action.action === "load" ? "campaign-load" : "metric",
+    rateSecret,
+  );
   const { data: hitCount, error: rateError } = await admin.rpc("consume_public_form_rate_limit", {
     p_ip_hash: rateKey,
   });
@@ -84,6 +97,20 @@ Deno.serve(async (request) => {
   const limit = 180;
   if (typeof hitCount !== "number" || hitCount > limit)
     return json({ error: "Please wait a minute before trying again." }, 429);
+  if (action.action === "load") {
+    const { data: campaign, error } = await admin
+      .from("campaigns")
+      .select(
+        "id,slug,title,purpose,status,theme,template,blocks,starts_at,expires_at,expired_message,expired_contact",
+      )
+      .eq("slug", action.slug)
+      .eq("status", "published")
+      .maybeSingle();
+    if (error) return json({ error: "Could not load this campaign." }, 503);
+    if (!campaign) return json({ error: "Campaign not found." }, 404);
+    return json(campaign, 200);
+  }
+
   const { data: campaign, error: campaignError } = await admin
     .from("campaigns")
     .select("id,status,starts_at,expires_at")

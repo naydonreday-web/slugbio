@@ -41,13 +41,6 @@ export type Database = {
             referencedRelation: "campaigns"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "campaign_responses_campaign_id_fkey"
-            columns: ["campaign_id"]
-            isOneToOne: false
-            referencedRelation: "public_campaigns"
-            referencedColumns: ["id"]
-          },
         ]
       }
       campaigns: {
@@ -268,53 +261,7 @@ export type Database = {
         ]
       }
     }
-    Views: {
-      public_campaigns: {
-        Row: {
-          blocks: Json | null
-          expired_contact: string | null
-          expired_message: string | null
-          expires_at: string | null
-          id: string | null
-          purpose: string | null
-          slug: string | null
-          starts_at: string | null
-          status: string | null
-          template: Json | null
-          theme: Json | null
-          title: string | null
-        }
-        Insert: {
-          blocks?: Json | null
-          expired_contact?: string | null
-          expired_message?: string | null
-          expires_at?: string | null
-          id?: string | null
-          purpose?: string | null
-          slug?: string | null
-          starts_at?: string | null
-          status?: string | null
-          template?: Json | null
-          theme?: Json | null
-          title?: string | null
-        }
-        Update: {
-          blocks?: Json | null
-          expired_contact?: string | null
-          expired_message?: string | null
-          expires_at?: string | null
-          id?: string | null
-          purpose?: string | null
-          slug?: string | null
-          starts_at?: string | null
-          status?: string | null
-          template?: Json | null
-          theme?: Json | null
-          title?: string | null
-        }
-        Relationships: []
-      }
-    }
+    Views: { [_ in never]: never }
     Functions: {
       is_campaign_slug_available: {
         Args: { p_campaign_id: string; p_slug: string }
